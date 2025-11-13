@@ -1,0 +1,23 @@
+# LIDE analyzer default configuration
+rootDir: ./legacy-codebase
+outputDir: ./build/jsp-json
+includePatterns: []
+excludePatterns:
+  - "**/target/**"
+  - "**/.git/**"
+  - "**/node_modules/**"
+strutsActionPackages:
+  - com.legacy.struts.actions
+springControllerPackages:
+  - com.legacy.web.controller
+namingConventions:
+  jspToControllerPatterns:
+    - "%sAction"
+    - "%sController"
+    - "%sDispatchAction"
+  formBeanSuffixes:
+    - Form
+    - Command
+    - Request
+    - Model
+    - Dto
