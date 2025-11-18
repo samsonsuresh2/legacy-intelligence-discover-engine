@@ -13,6 +13,8 @@ import com.lide.core.jsp.JspAnalyzer;
 import com.lide.core.model.PageDescriptor;
 import com.lide.core.report.DefaultJsonSchemaGenerator;
 import com.lide.core.report.JsonSchemaGenerator;
+import com.lide.core.report.DefaultMigrationReportGenerator;
+import com.lide.core.report.MigrationReportGenerator;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -45,6 +47,7 @@ public final class LideCli {
             JspAnalyzer jspAnalyzer = new DefaultJspAnalyzer();
             JavaUsageAnalyzer javaUsageAnalyzer = new DefaultJavaUsageAnalyzer();
             JsonSchemaGenerator jsonSchemaGenerator = new DefaultJsonSchemaGenerator(config);
+            MigrationReportGenerator migrationReportGenerator = new DefaultMigrationReportGenerator();
 
             LOGGER.info("Starting scan from {} with output {}", config.getRootDir(), config.getOutputDir());
             LOGGER.info("Include patterns: {}", config.getIncludePatterns());
@@ -67,6 +70,9 @@ public final class LideCli {
 
             jsonSchemaGenerator.generate(config.getRootDir(), config.getOutputDir(), pages, javaMetadata);
             LOGGER.info("JSON generation complete: artifacts available under {}", config.getOutputDir());
+
+            migrationReportGenerator.generate(config.getRootDir(), config.getOutputDir(), pages, javaMetadata);
+            LOGGER.info("Migration report complete: dashboard available under {}", config.getOutputDir());
         } catch (Exception ex) {
             LOGGER.error("Scan failed: {}", ex.getMessage(), ex);
             System.exit(1);
