@@ -1,13 +1,15 @@
 package com.lide.core;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.lide.core.extractors.NavigationTargetExtractor;
+import com.lide.core.extractors.UrlParameterExtractor;
 import com.lide.core.fs.CodebaseIndex;
 import com.lide.core.java.DefaultJavaUsageAnalyzer;
 import com.lide.core.java.JavaFieldMetadata;
 import com.lide.core.java.JavaMetadataIndex;
 import com.lide.core.java.JavaUsageAnalyzer;
-import com.lide.core.extractors.NavigationTargetExtractor;
 import com.lide.core.jsp.DefaultNavigationTargetExtractor;
+import com.lide.core.jsp.DefaultUrlParameterExtractor;
 import com.lide.core.jsp.DefaultJspAnalyzer;
 import com.lide.core.jsp.JspAnalyzer;
 import com.lide.core.model.FieldDescriptor;
@@ -53,6 +55,9 @@ class AnalyzerFixturesTest {
 
         NavigationTargetExtractor navigationTargetExtractor = new DefaultNavigationTargetExtractor();
         navigationTargetExtractor.extract(tempRoot, pages);
+
+        UrlParameterExtractor urlParameterExtractor = new DefaultUrlParameterExtractor();
+        urlParameterExtractor.extract(tempRoot, pages);
 
         assertEquals(1, pages.size());
         PageDescriptor page = pages.get(0);
@@ -139,6 +144,9 @@ class AnalyzerFixturesTest {
 
         NavigationTargetExtractor navigationTargetExtractor = new DefaultNavigationTargetExtractor();
         navigationTargetExtractor.extract(tempRoot, pages);
+
+        UrlParameterExtractor urlParameterExtractor = new DefaultUrlParameterExtractor();
+        urlParameterExtractor.extract(tempRoot, pages);
 
         JavaUsageAnalyzer javaAnalyzer = new DefaultJavaUsageAnalyzer();
         JavaMetadataIndex javaMetadata = javaAnalyzer.analyze(index);

@@ -50,6 +50,20 @@ export interface OutputSectionDescriptor {
   notes?: string[];
 }
 
+export interface NavigationTarget {
+  target?: string;
+  sourcePattern?: string;
+  snippet?: string;
+  confidence?: string;
+}
+
+export interface UrlParameterCandidate {
+  name?: string;
+  source?: string;
+  snippet?: string;
+  confidence?: string;
+}
+
 export interface PageMetadata {
   controllerCandidates?: string[];
   backingBeanCandidates?: string[];
@@ -63,6 +77,8 @@ export interface PageSchema {
   title?: string;
   forms?: FormDescriptor[];
   outputs?: OutputSectionDescriptor[];
+  navigationTargets?: NavigationTarget[];
+  urlParameterCandidates?: UrlParameterCandidate[];
   metadata?: PageMetadata;
 }
 
@@ -72,6 +88,8 @@ export interface SummaryPageEntry {
   forms?: number;
   fields?: number;
   outputs?: number;
+  navigationTargets?: number;
+  urlParameters?: number;
   confidence?: string;
   confidenceScore?: number;
 }

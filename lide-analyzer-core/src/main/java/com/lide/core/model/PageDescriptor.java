@@ -29,6 +29,7 @@ public class PageDescriptor {
     private List<FormDescriptor> forms; // TODO: capture form descriptors discovered in the page
     private List<OutputSectionDescriptor> outputs; // TODO: capture output structures such as tables
     private List<NavigationTarget> navigationTargets; // TODO: capture navigation targets to other JSPs
+    private List<UrlParameter> urlParameterCandidates; // TODO: capture URL parameters referenced by page links/scripts
     private List<String> controllerCandidates; // TODO: correlate JSP with backing Java classes
     private List<String> backingBeanCandidates; // TODO: proposed backing beans inferred from heuristics
     private List<String> notes; // TODO: include diagnostic notes for reviewers
@@ -85,6 +86,14 @@ public class PageDescriptor {
 
     public void setNavigationTargets(List<NavigationTarget> navigationTargets) {
         this.navigationTargets = navigationTargets;
+    }
+
+    public List<UrlParameter> getUrlParameterCandidates() {
+        return urlParameterCandidates;
+    }
+
+    public void setUrlParameterCandidates(List<UrlParameter> urlParameterCandidates) {
+        this.urlParameterCandidates = urlParameterCandidates;
     }
 
     public List<String> getControllerCandidates() {

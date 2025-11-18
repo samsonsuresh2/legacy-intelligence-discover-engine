@@ -161,6 +161,40 @@ export function PageDetail({ page }: PageDetailProps) {
           <div className="muted">No outputs detected.</div>
         )}
       </div>
+
+      <div className="section">
+        <h3>Navigation targets</h3>
+        {page.navigationTargets && page.navigationTargets.length > 0 ? (
+          <div className="cards">
+            {page.navigationTargets.map((target, idx) => (
+              <div className="card" key={`${target.target ?? 'nav'}-${idx}`}>
+                <div><strong>{target.target ?? 'Unknown target'}</strong></div>
+                <div className="muted small">{target.sourcePattern ?? 'source unknown'}</div>
+                {target.snippet && <div className="muted small">{target.snippet}</div>}
+              </div>
+            ))}
+          </div>
+        ) : (
+          <div className="muted">No navigation targets detected.</div>
+        )}
+      </div>
+
+      <div className="section">
+        <h3>URL parameters</h3>
+        {page.urlParameterCandidates && page.urlParameterCandidates.length > 0 ? (
+          <div className="cards">
+            {page.urlParameterCandidates.map((param, idx) => (
+              <div className="card" key={`${param.name ?? 'param'}-${idx}`}>
+                <div><strong>{param.name ?? 'parameter'}</strong></div>
+                <div className="muted small">{param.source ?? 'source unknown'}</div>
+                {param.snippet && <div className="muted small">{param.snippet}</div>}
+              </div>
+            ))}
+          </div>
+        ) : (
+          <div className="muted">No URL parameters detected.</div>
+        )}
+      </div>
     </div>
   );
 }

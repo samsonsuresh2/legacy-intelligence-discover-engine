@@ -4,6 +4,7 @@ import com.lide.core.CodebaseScanner;
 import com.lide.core.config.AnalyzerConfig;
 import com.lide.core.config.AnalyzerConfigLoader;
 import com.lide.core.extractors.NavigationTargetExtractor;
+import com.lide.core.extractors.UrlParameterExtractor;
 import com.lide.core.fs.CodebaseIndex;
 import com.lide.core.fs.DefaultCodebaseScanner;
 import com.lide.core.java.DefaultJavaUsageAnalyzer;
@@ -11,6 +12,7 @@ import com.lide.core.java.JavaMetadataIndex;
 import com.lide.core.java.JavaUsageAnalyzer;
 import com.lide.core.jsp.DefaultJspAnalyzer;
 import com.lide.core.jsp.DefaultNavigationTargetExtractor;
+import com.lide.core.jsp.DefaultUrlParameterExtractor;
 import com.lide.core.jsp.JspAnalyzer;
 import com.lide.core.model.PageDescriptor;
 import com.lide.core.report.DefaultJsonSchemaGenerator;
@@ -48,6 +50,7 @@ public final class LideCli {
                     config.getIncludePatterns(), config.getExcludePatterns());
             JspAnalyzer jspAnalyzer = new DefaultJspAnalyzer();
             NavigationTargetExtractor navigationTargetExtractor = new DefaultNavigationTargetExtractor();
+            UrlParameterExtractor urlParameterExtractor = new DefaultUrlParameterExtractor();
             JavaUsageAnalyzer javaUsageAnalyzer = new DefaultJavaUsageAnalyzer();
             JsonSchemaGenerator jsonSchemaGenerator = new DefaultJsonSchemaGenerator(config);
             MigrationReportGenerator migrationReportGenerator = new DefaultMigrationReportGenerator();
@@ -66,6 +69,9 @@ public final class LideCli {
 
             navigationTargetExtractor.extract(config.getRootDir(), pages);
             LOGGER.info("Navigation extraction complete for {} pages", pages.size());
+
+            urlParameterExtractor.extract(config.getRootDir(), pages);
+            LOGGER.info("URL parameter extraction complete for {} pages", pages.size());
 
             JavaMetadataIndex javaMetadata = javaUsageAnalyzer.analyze(index);
             LOGGER.info("Java metadata classes: {}", javaMetadata.getFieldsByClass().size());

@@ -12,6 +12,7 @@ import com.lide.core.model.NavigationTarget;
 import com.lide.core.model.OptionDescriptor;
 import com.lide.core.model.OutputSectionDescriptor;
 import com.lide.core.model.PageDescriptor;
+import com.lide.core.model.UrlParameter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -619,6 +620,9 @@ public class DefaultJsonSchemaGenerator implements JsonSchemaGenerator {
         json.put("navigationTargets", ensureList(page.getNavigationTargets()).stream()
                 .map(this::toNavigationJson)
                 .collect(Collectors.toList()));
+        json.put("urlParameterCandidates", ensureList(page.getUrlParameterCandidates()).stream()
+                .map(this::toUrlParameterJson)
+                .collect(Collectors.toList()));
 
         Map<String, Object> metadata = new LinkedHashMap<>();
         metadata.put("controllerCandidates", ensureList(page.getControllerCandidates()));
@@ -689,6 +693,15 @@ public class DefaultJsonSchemaGenerator implements JsonSchemaGenerator {
         return map;
     }
 
+    private Map<String, Object> toUrlParameterJson(UrlParameter parameter) {
+        Map<String, Object> map = new LinkedHashMap<>();
+        map.put("name", parameter.getName());
+        map.put("source", parameter.getSource());
+        map.put("snippet", parameter.getSnippet());
+        map.put("confidence", parameter.getConfidence());
+        return map;
+    }
+
     private Map<String, Object> toOutputJson(OutputSectionDescriptor section) {
         Map<String, Object> map = new LinkedHashMap<>();
         map.put("id", section.getSectionId());
@@ -720,6 +733,7 @@ public class DefaultJsonSchemaGenerator implements JsonSchemaGenerator {
         summary.put("fields", aggregation.totalFields());
         summary.put("outputs", aggregation.outputCount());
         summary.put("navigationTargets", ensureList(page.getNavigationTargets()).size());
+        summary.put("urlParameters", ensureList(page.getUrlParameterCandidates()).size());
         summary.put("confidenceScore", aggregation.confidenceScore());
         summary.put("confidence", aggregation.confidenceLabel());
         return summary;
