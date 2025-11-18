@@ -5,7 +5,9 @@ import com.lide.core.fs.CodebaseIndex;
 import com.lide.core.java.DefaultJavaUsageAnalyzer;
 import com.lide.core.java.JavaMetadataIndex;
 import com.lide.core.java.JavaUsageAnalyzer;
+import com.lide.core.extractors.NavigationTargetExtractor;
 import com.lide.core.jsp.DefaultJspAnalyzer;
+import com.lide.core.jsp.DefaultNavigationTargetExtractor;
 import com.lide.core.jsp.JspAnalyzer;
 import com.lide.core.model.PageDescriptor;
 import com.lide.core.report.DefaultMigrationReportGenerator;
@@ -50,6 +52,9 @@ class DefaultMigrationReportGeneratorTest {
 
         JspAnalyzer jspAnalyzer = new DefaultJspAnalyzer();
         List<PageDescriptor> pages = jspAnalyzer.analyze(tempRoot, index);
+
+        NavigationTargetExtractor navigationTargetExtractor = new DefaultNavigationTargetExtractor();
+        navigationTargetExtractor.extract(tempRoot, pages);
 
         JavaUsageAnalyzer javaAnalyzer = new DefaultJavaUsageAnalyzer();
         JavaMetadataIndex javaMetadata = javaAnalyzer.analyze(index);

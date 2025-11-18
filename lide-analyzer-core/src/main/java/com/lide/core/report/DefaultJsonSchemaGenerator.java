@@ -8,6 +8,7 @@ import com.lide.core.java.JavaFieldMetadata;
 import com.lide.core.java.JavaMetadataIndex;
 import com.lide.core.model.FieldDescriptor;
 import com.lide.core.model.FormDescriptor;
+import com.lide.core.model.NavigationTarget;
 import com.lide.core.model.OptionDescriptor;
 import com.lide.core.model.OutputSectionDescriptor;
 import com.lide.core.model.PageDescriptor;
@@ -615,6 +616,9 @@ public class DefaultJsonSchemaGenerator implements JsonSchemaGenerator {
 
         json.put("forms", page.getForms().stream().map(this::toFormJson).collect(Collectors.toList()));
         json.put("outputs", page.getOutputs().stream().map(this::toOutputJson).collect(Collectors.toList()));
+        json.put("navigationTargets", ensureList(page.getNavigationTargets()).stream()
+                .map(this::toNavigationJson)
+                .collect(Collectors.toList()));
 
         Map<String, Object> metadata = new LinkedHashMap<>();
         metadata.put("controllerCandidates", ensureList(page.getControllerCandidates()));
@@ -676,6 +680,15 @@ public class DefaultJsonSchemaGenerator implements JsonSchemaGenerator {
         return optionJson;
     }
 
+    private Map<String, Object> toNavigationJson(NavigationTarget target) {
+        Map<String, Object> map = new LinkedHashMap<>();
+        map.put("target", target.getTargetPage());
+        map.put("sourcePattern", target.getSourcePattern());
+        map.put("snippet", target.getSnippet());
+        map.put("confidence", target.getConfidence());
+        return map;
+    }
+
     private Map<String, Object> toOutputJson(OutputSectionDescriptor section) {
         Map<String, Object> map = new LinkedHashMap<>();
         map.put("id", section.getSectionId());
@@ -706,6 +719,7 @@ public class DefaultJsonSchemaGenerator implements JsonSchemaGenerator {
         summary.put("forms", aggregation.formCount());
         summary.put("fields", aggregation.totalFields());
         summary.put("outputs", aggregation.outputCount());
+        summary.put("navigationTargets", ensureList(page.getNavigationTargets()).size());
         summary.put("confidenceScore", aggregation.confidenceScore());
         summary.put("confidence", aggregation.confidenceLabel());
         return summary;

@@ -77,6 +77,7 @@ public class DefaultJspAnalyzer implements JspAnalyzer {
         descriptor.setForms(forms);
         List<OutputSectionDescriptor> outputs = analyzeOutputs(document);
         descriptor.setOutputs(outputs);
+        descriptor.setNavigationTargets(new ArrayList<>());
         descriptor.setControllerCandidates(new ArrayList<>());
         descriptor.setNotes(new ArrayList<>());
 

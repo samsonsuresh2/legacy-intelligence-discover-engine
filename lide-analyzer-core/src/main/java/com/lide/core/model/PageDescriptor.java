@@ -28,6 +28,7 @@ public class PageDescriptor {
     private String title; // TODO: infer title from page content or metadata
     private List<FormDescriptor> forms; // TODO: capture form descriptors discovered in the page
     private List<OutputSectionDescriptor> outputs; // TODO: capture output structures such as tables
+    private List<NavigationTarget> navigationTargets; // TODO: capture navigation targets to other JSPs
     private List<String> controllerCandidates; // TODO: correlate JSP with backing Java classes
     private List<String> backingBeanCandidates; // TODO: proposed backing beans inferred from heuristics
     private List<String> notes; // TODO: include diagnostic notes for reviewers
@@ -76,6 +77,14 @@ public class PageDescriptor {
 
     public void setOutputs(List<OutputSectionDescriptor> outputs) {
         this.outputs = outputs;
+    }
+
+    public List<NavigationTarget> getNavigationTargets() {
+        return navigationTargets;
+    }
+
+    public void setNavigationTargets(List<NavigationTarget> navigationTargets) {
+        this.navigationTargets = navigationTargets;
     }
 
     public List<String> getControllerCandidates() {

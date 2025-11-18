@@ -21,6 +21,15 @@
     <button type="submit">Search</button>
 </form>
 
+<a class="primary-nav" href="customerDetail.jsp">Customer Detail</a>
+
+<script>
+    if (window.location.hash === '#home') {
+        window.location = 'home.jsp';
+    }
+    var nextReport = "reports.jsp";
+</script>
+
 <table id="customerTable">
     <thead>
     <tr><th>ID</th><th>Name</th><th>Status</th></tr>

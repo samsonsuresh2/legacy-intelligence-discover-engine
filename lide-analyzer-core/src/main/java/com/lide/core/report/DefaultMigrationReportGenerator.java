@@ -74,6 +74,7 @@ public class DefaultMigrationReportGenerator implements MigrationReportGenerator
                 .mapToInt(List::size)
                 .sum();
         int outputCount = ensureList(page.getOutputs()).size();
+        int navigationCount = ensureList(page.getNavigationTargets()).size();
 
         String pageContent = readPageContent(rootDir, page);
         int dynamicExpressions = countDynamicExpressions(page, pageContent);
@@ -112,6 +113,7 @@ public class DefaultMigrationReportGenerator implements MigrationReportGenerator
                 formCount,
                 fieldCount,
                 outputCount,
+                navigationCount,
                 dynamicExpressions,
                 hasScriptlets,
                 hasSessionUsage,
@@ -245,7 +247,7 @@ public class DefaultMigrationReportGenerator implements MigrationReportGenerator
 
     private void writeCsvReport(Path path, List<PageReportEntry> entries) throws IOException {
         List<String> lines = new ArrayList<>();
-        lines.add("pageId,title,forms,fields,outputs,dynamicExpressions,scriptlets,sessionUsage,frames,missingMappings,complexity,difficulty,confidence");
+        lines.add("pageId,title,forms,fields,outputs,navigationTargets,dynamicExpressions,scriptlets,sessionUsage,frames,missingMappings,complexity,difficulty,confidence");
         for (PageReportEntry entry : entries) {
             lines.add(String.join(",",
                     escapeCsv(entry.pageId()),
@@ -253,6 +255,7 @@ public class DefaultMigrationReportGenerator implements MigrationReportGenerator
                     Integer.toString(entry.formCount()),
                     Integer.toString(entry.fieldCount()),
                     Integer.toString(entry.outputCount()),
+                    Integer.toString(entry.navigationTargets()),
                     Integer.toString(entry.dynamicExpressions()),
                     Boolean.toString(entry.scriptlets()),
                     Boolean.toString(entry.sessionUsage()),
@@ -302,6 +305,7 @@ public class DefaultMigrationReportGenerator implements MigrationReportGenerator
                         <th>Forms</th>
                         <th>Fields</th>
                         <th>Outputs</th>
+                        <th>Navigation</th>
                         <th>Complexity</th>
                         <th>Difficulty</th>
                         <th>Notes</th>
@@ -326,6 +330,7 @@ public class DefaultMigrationReportGenerator implements MigrationReportGenerator
                               <td>${entry.formCount}</td>
                               <td>${entry.fieldCount}</td>
                               <td>${entry.outputCount}</td>
+                              <td>${entry.navigationTargets}</td>
                               <td>${entry.complexityScore.toFixed(1)}</td>
                               <td><span class="badge ${entry.difficulty}">${entry.difficulty}</span></td>
                               <td>${(entry.notes || []).join('<br/>')}</td>`;
@@ -376,6 +381,7 @@ public class DefaultMigrationReportGenerator implements MigrationReportGenerator
                                    int formCount,
                                    int fieldCount,
                                    int outputCount,
+                                   int navigationTargets,
                                    int dynamicExpressions,
                                    boolean scriptlets,
                                    boolean sessionUsage,

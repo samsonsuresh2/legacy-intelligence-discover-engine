@@ -6,6 +6,8 @@ import com.lide.core.java.DefaultJavaUsageAnalyzer;
 import com.lide.core.java.JavaFieldMetadata;
 import com.lide.core.java.JavaMetadataIndex;
 import com.lide.core.java.JavaUsageAnalyzer;
+import com.lide.core.extractors.NavigationTargetExtractor;
+import com.lide.core.jsp.DefaultNavigationTargetExtractor;
 import com.lide.core.jsp.DefaultJspAnalyzer;
 import com.lide.core.jsp.JspAnalyzer;
 import com.lide.core.model.FieldDescriptor;
@@ -49,9 +51,13 @@ class AnalyzerFixturesTest {
         JspAnalyzer analyzer = new DefaultJspAnalyzer();
         List<PageDescriptor> pages = analyzer.analyze(tempRoot, index);
 
+        NavigationTargetExtractor navigationTargetExtractor = new DefaultNavigationTargetExtractor();
+        navigationTargetExtractor.extract(tempRoot, pages);
+
         assertEquals(1, pages.size());
         PageDescriptor page = pages.get(0);
         assertEquals("customer/searchCustomer.jsp", page.getPageId());
+        assertEquals(3, page.getNavigationTargets().size());
 
         FormDescriptor form = assertSingleForm(page);
         assertEquals("searchForm", form.getFormId());
@@ -131,6 +137,9 @@ class AnalyzerFixturesTest {
         JspAnalyzer jspAnalyzer = new DefaultJspAnalyzer();
         List<PageDescriptor> pages = jspAnalyzer.analyze(tempRoot, index);
 
+        NavigationTargetExtractor navigationTargetExtractor = new DefaultNavigationTargetExtractor();
+        navigationTargetExtractor.extract(tempRoot, pages);
+
         JavaUsageAnalyzer javaAnalyzer = new DefaultJavaUsageAnalyzer();
         JavaMetadataIndex javaMetadata = javaAnalyzer.analyze(index);
 
@@ -156,6 +165,9 @@ class AnalyzerFixturesTest {
         assertEquals(10, idField.get("maxLength"));
         List<?> constraints = (List<?>) idField.get("constraints");
         assertTrue(constraints.contains("required"));
+
+        List<Map<?, ?>> navigationTargets = (List<Map<?, ?>>) json.get("navigationTargets");
+        assertEquals(3, navigationTargets.size());
 
         Path summary = outputDir.resolve("summary.json");
         assertTrue(Files.exists(summary));
