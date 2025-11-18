@@ -9,11 +9,14 @@ import com.lide.core.java.JavaMetadataIndex;
 import com.lide.core.model.FieldDescriptor;
 import com.lide.core.model.FormDescriptor;
 import com.lide.core.model.FrameDefinition;
+import com.lide.core.model.HiddenField;
 import com.lide.core.model.NavigationTarget;
 import com.lide.core.model.OptionDescriptor;
+import com.lide.core.model.OutputFieldDescriptor;
 import com.lide.core.model.OutputSectionDescriptor;
 import com.lide.core.model.PageDescriptor;
 import com.lide.core.model.CrossFrameInteraction;
+import com.lide.core.model.SessionDependency;
 import com.lide.core.model.UrlParameter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -632,6 +635,12 @@ public class DefaultJsonSchemaGenerator implements JsonSchemaGenerator {
         json.put("urlParameterCandidates", ensureList(page.getUrlParameterCandidates()).stream()
                 .map(this::toUrlParameterJson)
                 .collect(Collectors.toList()));
+        json.put("hiddenFields", ensureList(page.getHiddenFields()).stream()
+                .map(this::toHiddenFieldJson)
+                .collect(Collectors.toList()));
+        json.put("sessionDependencies", ensureList(page.getSessionDependencies()).stream()
+                .map(this::toSessionDependencyJson)
+                .collect(Collectors.toList()));
 
         Map<String, Object> metadata = new LinkedHashMap<>();
         metadata.put("controllerCandidates", ensureList(page.getControllerCandidates()));
@@ -733,6 +742,25 @@ public class DefaultJsonSchemaGenerator implements JsonSchemaGenerator {
         return map;
     }
 
+    private Map<String, Object> toHiddenFieldJson(HiddenField hiddenField) {
+        Map<String, Object> map = new LinkedHashMap<>();
+        map.put("name", hiddenField.getName());
+        map.put("defaultValue", hiddenField.getDefaultValue());
+        map.put("expression", hiddenField.getExpression());
+        map.put("snippet", hiddenField.getSnippet());
+        map.put("confidence", hiddenField.getConfidence());
+        return map;
+    }
+
+    private Map<String, Object> toSessionDependencyJson(SessionDependency dependency) {
+        Map<String, Object> map = new LinkedHashMap<>();
+        map.put("key", dependency.getKey());
+        map.put("source", dependency.getSource());
+        map.put("snippet", dependency.getSnippet());
+        map.put("confidence", dependency.getConfidence());
+        return map;
+    }
+
     private Map<String, Object> toOutputJson(OutputSectionDescriptor section) {
         Map<String, Object> map = new LinkedHashMap<>();
         map.put("id", section.getSectionId());
@@ -768,6 +796,8 @@ public class DefaultJsonSchemaGenerator implements JsonSchemaGenerator {
         summary.put("crossFrameInteractions", ensureList(page.getCrossFrameInteractions()).size());
         summary.put("navigationTargets", ensureList(page.getNavigationTargets()).size());
         summary.put("urlParameters", ensureList(page.getUrlParameterCandidates()).size());
+        summary.put("hiddenFields", ensureList(page.getHiddenFields()).size());
+        summary.put("sessionDependencies", ensureList(page.getSessionDependencies()).size());
         summary.put("confidenceScore", aggregation.confidenceScore());
         summary.put("confidence", aggregation.confidenceLabel());
         return summary;

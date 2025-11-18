@@ -32,6 +32,8 @@ public class PageDescriptor {
     private List<UrlParameter> urlParameterCandidates; // TODO: capture URL parameters referenced by page links/scripts
     private List<FrameDefinition> frameDefinitions; // TODO: capture frameset and iframe declarations
     private List<CrossFrameInteraction> crossFrameInteractions; // TODO: capture interactions between frames
+    private List<HiddenField> hiddenFields; // TODO: capture hidden field state
+    private List<SessionDependency> sessionDependencies; // TODO: capture session attribute usage
     private List<String> controllerCandidates; // TODO: correlate JSP with backing Java classes
     private List<String> backingBeanCandidates; // TODO: proposed backing beans inferred from heuristics
     private List<String> notes; // TODO: include diagnostic notes for reviewers
@@ -113,6 +115,22 @@ public class PageDescriptor {
 
     public void setCrossFrameInteractions(List<CrossFrameInteraction> crossFrameInteractions) {
         this.crossFrameInteractions = crossFrameInteractions;
+    }
+
+    public List<HiddenField> getHiddenFields() {
+        return hiddenFields;
+    }
+
+    public void setHiddenFields(List<HiddenField> hiddenFields) {
+        this.hiddenFields = hiddenFields;
+    }
+
+    public List<SessionDependency> getSessionDependencies() {
+        return sessionDependencies;
+    }
+
+    public void setSessionDependencies(List<SessionDependency> sessionDependencies) {
+        this.sessionDependencies = sessionDependencies;
     }
 
     public List<String> getControllerCandidates() {

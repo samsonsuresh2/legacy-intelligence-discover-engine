@@ -5,5 +5,55 @@ package com.lide.core.model;
  */
 public class HiddenField {
 
-    // TODO: define hidden field details in P1.
+    public static final String CONFIDENCE_HIGH = "HIGH";
+
+    private String name;
+    private String defaultValue;
+    private String expression;
+    private String snippet;
+    private String confidence;
+
+    public HiddenField() {
+        // Default constructor
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getDefaultValue() {
+        return defaultValue;
+    }
+
+    public void setDefaultValue(String defaultValue) {
+        this.defaultValue = defaultValue;
+    }
+
+    public String getExpression() {
+        return expression;
+    }
+
+    public void setExpression(String expression) {
+        this.expression = expression;
+    }
+
+    public String getSnippet() {
+        return snippet;
+    }
+
+    public void setSnippet(String snippet) {
+        this.snippet = snippet;
+    }
+
+    public String getConfidence() {
+        return confidence;
+    }
+
+    public void setConfidence(String confidence) {
+        this.confidence = confidence;
+    }
 }

@@ -2,7 +2,9 @@ package com.lide.core;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.lide.core.extractors.CrossFrameInteractionExtractor;
+import com.lide.core.extractors.HiddenFieldStateExtractor;
 import com.lide.core.extractors.NavigationTargetExtractor;
+import com.lide.core.extractors.SessionUsageExtractor;
 import com.lide.core.extractors.UrlParameterExtractor;
 import com.lide.core.fs.CodebaseIndex;
 import com.lide.core.java.DefaultJavaUsageAnalyzer;
@@ -11,7 +13,9 @@ import com.lide.core.java.JavaMetadataIndex;
 import com.lide.core.java.JavaUsageAnalyzer;
 import com.lide.core.jsp.DefaultCrossFrameInteractionExtractor;
 import com.lide.core.jsp.DefaultFrameAnalyzer;
+import com.lide.core.jsp.DefaultHiddenFieldStateExtractor;
 import com.lide.core.jsp.DefaultNavigationTargetExtractor;
+import com.lide.core.jsp.DefaultSessionUsageExtractor;
 import com.lide.core.jsp.DefaultUrlParameterExtractor;
 import com.lide.core.jsp.DefaultJspAnalyzer;
 import com.lide.core.jsp.JspAnalyzer;
@@ -64,6 +68,12 @@ class AnalyzerFixturesTest {
 
         CrossFrameInteractionExtractor crossFrameInteractionExtractor = new DefaultCrossFrameInteractionExtractor();
         crossFrameInteractionExtractor.extract(tempRoot, pages);
+
+        HiddenFieldStateExtractor hiddenFieldStateExtractor = new DefaultHiddenFieldStateExtractor();
+        hiddenFieldStateExtractor.extract(tempRoot, pages);
+
+        SessionUsageExtractor sessionUsageExtractor = new DefaultSessionUsageExtractor();
+        sessionUsageExtractor.extract(tempRoot, pages);
 
         UrlParameterExtractor urlParameterExtractor = new DefaultUrlParameterExtractor();
         urlParameterExtractor.extract(tempRoot, pages);

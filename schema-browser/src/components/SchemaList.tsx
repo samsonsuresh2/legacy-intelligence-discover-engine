@@ -30,7 +30,8 @@ export function SchemaList({ pages, selectedPageId, onSelect }: SchemaListProps)
                 <div className="muted small">
                   {page.forms ?? 0} forms · {page.fields ?? 0} fields · {page.outputs ?? 0} outputs ·{' '}
                   {page.frames ?? 0} frames{page.frameset ? ' (layout)' : ''} · {page.navigationTargets ?? 0} nav ·{' '}
-                  {page.crossFrameInteractions ?? 0} xframe · {page.urlParameters ?? 0} params
+                  {page.crossFrameInteractions ?? 0} xframe · {page.urlParameters ?? 0} params · {page.hiddenFields ?? 0} hidden ·{' '}
+                  {page.sessionDependencies ?? 0} session
                 </div>
               </div>
               <div className={`tag ${confidenceTag(page.confidence)}`}>

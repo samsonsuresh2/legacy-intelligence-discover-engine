@@ -6,15 +6,15 @@ import java.nio.file.Path;
 import java.util.List;
 
 /**
- * Extracts session variable usage and dependencies.
+ * Extracts hidden field definitions and state hints from JSP/HTML pages.
  */
-public interface SessionUsageExtractor {
+public interface HiddenFieldStateExtractor {
 
     /**
-     * Enriches page descriptors with detected session dependencies.
+     * Enriches the provided page descriptors with detected hidden field definitions.
      *
      * @param rootDir base directory for resolving relative paths
-     * @param pages   page descriptors to update
+     * @param pages   page descriptors to enrich
      */
     void extract(Path rootDir, List<PageDescriptor> pages);
 }

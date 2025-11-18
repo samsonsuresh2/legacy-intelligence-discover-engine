@@ -1,4 +1,4 @@
-import { FieldDescriptor, FormDescriptor, OutputSectionDescriptor, PageSchema, FrameDefinition } from '../types';
+import { FieldDescriptor, FormDescriptor, OutputSectionDescriptor, PageSchema, FrameDefinition, HiddenField, SessionDependency } from '../types';
 
 interface PageDetailProps {
   page?: PageSchema;
@@ -160,6 +160,45 @@ export function PageDetail({ page }: PageDetailProps) {
           </div>
         ) : (
           <div className="muted">No outputs detected.</div>
+        )}
+      </div>
+
+      <div className="section">
+        <h3>Hidden fields</h3>
+        {page.hiddenFields && page.hiddenFields.length > 0 ? (
+          <div className="cards">
+            {page.hiddenFields.map((hidden: HiddenField, idx: number) => (
+              <div className="card" key={`${hidden.name ?? 'hidden'}-${idx}`}>
+                <div>
+                  <strong>{hidden.name ?? 'hidden'}</strong>
+                  {hidden.defaultValue && <span className="muted small"> · default: {hidden.defaultValue}</span>}
+                </div>
+                {hidden.expression && <div className="muted small">expression: {hidden.expression}</div>}
+                {hidden.snippet && <div className="muted small">{hidden.snippet}</div>}
+              </div>
+            ))}
+          </div>
+        ) : (
+          <div className="muted">No hidden fields detected.</div>
+        )}
+      </div>
+
+      <div className="section">
+        <h3>Session dependencies</h3>
+        {page.sessionDependencies && page.sessionDependencies.length > 0 ? (
+          <div className="cards">
+            {page.sessionDependencies.map((dependency: SessionDependency, idx: number) => (
+              <div className="card" key={`${dependency.key ?? 'session'}-${idx}`}>
+                <div>
+                  <strong>{dependency.key ?? 'session key'}</strong>
+                </div>
+                <div className="muted small">source: {dependency.source ?? 'unknown'}</div>
+                {dependency.snippet && <div className="muted small">{dependency.snippet}</div>}
+              </div>
+            ))}
+          </div>
+        ) : (
+          <div className="muted">No session dependencies detected.</div>
         )}
       </div>
 

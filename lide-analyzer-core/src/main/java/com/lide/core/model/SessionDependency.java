@@ -5,5 +5,46 @@ package com.lide.core.model;
  */
 public class SessionDependency {
 
-    // TODO: define session dependency fields in P1.
+    public static final String CONFIDENCE_HIGH = "HIGH";
+
+    private String key;
+    private String source;
+    private String snippet;
+    private String confidence;
+
+    public SessionDependency() {
+        // Default constructor
+    }
+
+    public String getKey() {
+        return key;
+    }
+
+    public void setKey(String key) {
+        this.key = key;
+    }
+
+    public String getSource() {
+        return source;
+    }
+
+    public void setSource(String source) {
+        this.source = source;
+    }
+
+    public String getSnippet() {
+        return snippet;
+    }
+
+    public void setSnippet(String snippet) {
+        this.snippet = snippet;
+    }
+
+    public String getConfidence() {
+        return confidence;
+    }
+
+    public void setConfidence(String confidence) {
+        this.confidence = confidence;
+    }
 }

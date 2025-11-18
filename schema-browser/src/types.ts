@@ -50,6 +50,21 @@ export interface OutputSectionDescriptor {
   notes?: string[];
 }
 
+export interface HiddenField {
+  name?: string;
+  defaultValue?: string;
+  expression?: string;
+  snippet?: string;
+  confidence?: string;
+}
+
+export interface SessionDependency {
+  key?: string;
+  source?: string;
+  snippet?: string;
+  confidence?: string;
+}
+
 export interface FrameDefinition {
   frameName?: string;
   source?: string;
@@ -99,6 +114,8 @@ export interface PageSchema {
   crossFrameInteractions?: CrossFrameInteraction[];
   navigationTargets?: NavigationTarget[];
   urlParameterCandidates?: UrlParameterCandidate[];
+  hiddenFields?: HiddenField[];
+  sessionDependencies?: SessionDependency[];
   metadata?: PageMetadata;
 }
 
@@ -113,6 +130,8 @@ export interface SummaryPageEntry {
   crossFrameInteractions?: number;
   navigationTargets?: number;
   urlParameters?: number;
+  hiddenFields?: number;
+  sessionDependencies?: number;
   confidence?: string;
   confidenceScore?: number;
 }

@@ -5,6 +5,7 @@
 </head>
 <body>
 <form id="searchForm" action="/customerSearch.do" method="post">
+    <input type="hidden" name="mode" value="${sessionScope.mode}" />
     <label for="customerId">Customer ID</label>
     <input type="text" id="customerId" name="customerId" maxlength="10" required="true" placeholder="Enter ID" />
 
