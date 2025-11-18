@@ -8,6 +8,7 @@ import com.lide.core.java.JavaFieldMetadata;
 import com.lide.core.java.JavaMetadataIndex;
 import com.lide.core.model.FieldDescriptor;
 import com.lide.core.model.FormDescriptor;
+import com.lide.core.model.FrameDefinition;
 import com.lide.core.model.NavigationTarget;
 import com.lide.core.model.OptionDescriptor;
 import com.lide.core.model.OutputSectionDescriptor;
@@ -99,6 +100,7 @@ public class DefaultJsonSchemaGenerator implements JsonSchemaGenerator {
         page.setForms(forms);
         List<OutputSectionDescriptor> outputs = new ArrayList<>(ensureList(page.getOutputs()));
         page.setOutputs(outputs);
+        page.setFrameDefinitions(new ArrayList<>(ensureList(page.getFrameDefinitions())));
         page.setNotes(new ArrayList<>(ensureList(page.getNotes())));
 
         HeuristicResult heuristics = applyHeuristics(page, forms, javaMetadata);
@@ -617,6 +619,9 @@ public class DefaultJsonSchemaGenerator implements JsonSchemaGenerator {
 
         json.put("forms", page.getForms().stream().map(this::toFormJson).collect(Collectors.toList()));
         json.put("outputs", page.getOutputs().stream().map(this::toOutputJson).collect(Collectors.toList()));
+        json.put("frameDefinitions", ensureList(page.getFrameDefinitions()).stream()
+                .map(this::toFrameJson)
+                .collect(Collectors.toList()));
         json.put("navigationTargets", ensureList(page.getNavigationTargets()).stream()
                 .map(this::toNavigationJson)
                 .collect(Collectors.toList()));
@@ -630,9 +635,21 @@ public class DefaultJsonSchemaGenerator implements JsonSchemaGenerator {
         metadata.put("notes", ensureList(page.getNotes()));
         metadata.put("confidenceScore", aggregation.confidenceScore());
         metadata.put("confidence", page.getConfidenceLabel());
+        metadata.put("framesetPage", Boolean.TRUE.equals(page.getFramesetPage()));
         json.put("metadata", metadata);
 
         return json;
+    }
+
+    private Map<String, Object> toFrameJson(FrameDefinition frame) {
+        Map<String, Object> map = new LinkedHashMap<>();
+        map.put("frameName", frame.getFrameName());
+        map.put("source", frame.getSource());
+        map.put("parentFrameName", frame.getParentFrameName());
+        map.put("depth", frame.getDepth());
+        map.put("tag", frame.getTag());
+        map.put("confidence", frame.getConfidence());
+        return map;
     }
 
     private Map<String, Object> toFormJson(FormDescriptor form) {
@@ -732,6 +749,8 @@ public class DefaultJsonSchemaGenerator implements JsonSchemaGenerator {
         summary.put("forms", aggregation.formCount());
         summary.put("fields", aggregation.totalFields());
         summary.put("outputs", aggregation.outputCount());
+        summary.put("frames", ensureList(page.getFrameDefinitions()).size());
+        summary.put("frameset", Boolean.TRUE.equals(page.getFramesetPage()));
         summary.put("navigationTargets", ensureList(page.getNavigationTargets()).size());
         summary.put("urlParameters", ensureList(page.getUrlParameterCandidates()).size());
         summary.put("confidenceScore", aggregation.confidenceScore());

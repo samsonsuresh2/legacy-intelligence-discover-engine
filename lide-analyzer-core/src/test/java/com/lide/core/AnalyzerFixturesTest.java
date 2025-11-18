@@ -8,6 +8,7 @@ import com.lide.core.java.DefaultJavaUsageAnalyzer;
 import com.lide.core.java.JavaFieldMetadata;
 import com.lide.core.java.JavaMetadataIndex;
 import com.lide.core.java.JavaUsageAnalyzer;
+import com.lide.core.jsp.DefaultFrameAnalyzer;
 import com.lide.core.jsp.DefaultNavigationTargetExtractor;
 import com.lide.core.jsp.DefaultUrlParameterExtractor;
 import com.lide.core.jsp.DefaultJspAnalyzer;
@@ -52,6 +53,9 @@ class AnalyzerFixturesTest {
 
         JspAnalyzer analyzer = new DefaultJspAnalyzer();
         List<PageDescriptor> pages = analyzer.analyze(tempRoot, index);
+
+        DefaultFrameAnalyzer frameAnalyzer = new DefaultFrameAnalyzer();
+        frameAnalyzer.extract(tempRoot, pages);
 
         NavigationTargetExtractor navigationTargetExtractor = new DefaultNavigationTargetExtractor();
         navigationTargetExtractor.extract(tempRoot, pages);
@@ -141,6 +145,9 @@ class AnalyzerFixturesTest {
 
         JspAnalyzer jspAnalyzer = new DefaultJspAnalyzer();
         List<PageDescriptor> pages = jspAnalyzer.analyze(tempRoot, index);
+
+        DefaultFrameAnalyzer frameAnalyzer = new DefaultFrameAnalyzer();
+        frameAnalyzer.extract(tempRoot, pages);
 
         NavigationTargetExtractor navigationTargetExtractor = new DefaultNavigationTargetExtractor();
         navigationTargetExtractor.extract(tempRoot, pages);

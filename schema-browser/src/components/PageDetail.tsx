@@ -1,4 +1,4 @@
-import { FieldDescriptor, FormDescriptor, OutputSectionDescriptor, PageSchema } from '../types';
+import { FieldDescriptor, FormDescriptor, OutputSectionDescriptor, PageSchema, FrameDefinition } from '../types';
 
 interface PageDetailProps {
   page?: PageSchema;
@@ -111,6 +111,7 @@ export function PageDetail({ page }: PageDetailProps) {
             Confidence: {page.metadata.confidence}
           </div>
         )}
+        {page.metadata?.framesetPage && <div className="tag warning">Layout / frameset</div>}
       </div>
 
       {page.metadata && (
@@ -159,6 +160,26 @@ export function PageDetail({ page }: PageDetailProps) {
           </div>
         ) : (
           <div className="muted">No outputs detected.</div>
+        )}
+      </div>
+
+      <div className="section">
+        <h3>Frames</h3>
+        {page.frameDefinitions && page.frameDefinitions.length > 0 ? (
+          <div className="cards">
+            {page.frameDefinitions.map((frame: FrameDefinition, idx: number) => (
+              <div className="card" key={`${frame.frameName ?? frame.source ?? 'frame'}-${idx}`}>
+                <div>
+                  <strong>{frame.frameName ?? 'frame'}</strong> · {frame.tag ?? 'FRAME'}
+                </div>
+                <div className="muted small">src: {frame.source ?? 'unknown'}</div>
+                {frame.parentFrameName && <div className="muted small">parent: {frame.parentFrameName}</div>}
+                <div className="muted small">depth: {frame.depth ?? 0}</div>
+              </div>
+            ))}
+          </div>
+        ) : (
+          <div className="muted">No frames detected.</div>
         )}
       </div>
 

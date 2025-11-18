@@ -30,11 +30,13 @@ public class PageDescriptor {
     private List<OutputSectionDescriptor> outputs; // TODO: capture output structures such as tables
     private List<NavigationTarget> navigationTargets; // TODO: capture navigation targets to other JSPs
     private List<UrlParameter> urlParameterCandidates; // TODO: capture URL parameters referenced by page links/scripts
+    private List<FrameDefinition> frameDefinitions; // TODO: capture frameset and iframe declarations
     private List<String> controllerCandidates; // TODO: correlate JSP with backing Java classes
     private List<String> backingBeanCandidates; // TODO: proposed backing beans inferred from heuristics
     private List<String> notes; // TODO: include diagnostic notes for reviewers
     private Double confidenceScore; // TODO: compute a confidence indicator once metadata is merged
     private String confidenceLabel; // TODO: expose HIGH/MEDIUM/LOW interpretation for dashboards
+    private Boolean framesetPage; // TODO: flag layout/frameset pages
 
     public PageDescriptor() {
         // Default constructor for frameworks and serialization.
@@ -96,6 +98,14 @@ public class PageDescriptor {
         this.urlParameterCandidates = urlParameterCandidates;
     }
 
+    public List<FrameDefinition> getFrameDefinitions() {
+        return frameDefinitions;
+    }
+
+    public void setFrameDefinitions(List<FrameDefinition> frameDefinitions) {
+        this.frameDefinitions = frameDefinitions;
+    }
+
     public List<String> getControllerCandidates() {
         return controllerCandidates;
     }
@@ -134,5 +144,13 @@ public class PageDescriptor {
 
     public void setConfidenceLabel(String confidenceLabel) {
         this.confidenceLabel = confidenceLabel;
+    }
+
+    public Boolean getFramesetPage() {
+        return framesetPage;
+    }
+
+    public void setFramesetPage(Boolean framesetPage) {
+        this.framesetPage = framesetPage;
     }
 }

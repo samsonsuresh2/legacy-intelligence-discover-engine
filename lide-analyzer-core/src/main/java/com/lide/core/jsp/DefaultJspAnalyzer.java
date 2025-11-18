@@ -77,9 +77,11 @@ public class DefaultJspAnalyzer implements JspAnalyzer {
         descriptor.setForms(forms);
         List<OutputSectionDescriptor> outputs = analyzeOutputs(document);
         descriptor.setOutputs(outputs);
+        descriptor.setFrameDefinitions(new ArrayList<>());
         descriptor.setNavigationTargets(new ArrayList<>());
         descriptor.setControllerCandidates(new ArrayList<>());
         descriptor.setNotes(new ArrayList<>());
+        descriptor.setFramesetPage(Boolean.FALSE);
 
         LOGGER.info("Page {} - forms detected: {}", descriptor.getPageId(), forms.size());
         for (FormDescriptor form : forms) {

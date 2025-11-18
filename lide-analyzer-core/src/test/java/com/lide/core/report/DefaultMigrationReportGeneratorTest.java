@@ -7,6 +7,7 @@ import com.lide.core.java.JavaMetadataIndex;
 import com.lide.core.java.JavaUsageAnalyzer;
 import com.lide.core.extractors.NavigationTargetExtractor;
 import com.lide.core.extractors.UrlParameterExtractor;
+import com.lide.core.jsp.DefaultFrameAnalyzer;
 import com.lide.core.jsp.DefaultJspAnalyzer;
 import com.lide.core.jsp.DefaultNavigationTargetExtractor;
 import com.lide.core.jsp.DefaultUrlParameterExtractor;
@@ -54,6 +55,9 @@ class DefaultMigrationReportGeneratorTest {
 
         JspAnalyzer jspAnalyzer = new DefaultJspAnalyzer();
         List<PageDescriptor> pages = jspAnalyzer.analyze(tempRoot, index);
+
+        DefaultFrameAnalyzer frameAnalyzer = new DefaultFrameAnalyzer();
+        frameAnalyzer.extract(tempRoot, pages);
 
         NavigationTargetExtractor navigationTargetExtractor = new DefaultNavigationTargetExtractor();
         navigationTargetExtractor.extract(tempRoot, pages);

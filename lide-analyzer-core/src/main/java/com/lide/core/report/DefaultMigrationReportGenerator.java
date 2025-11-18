@@ -76,13 +76,16 @@ public class DefaultMigrationReportGenerator implements MigrationReportGenerator
         int outputCount = ensureList(page.getOutputs()).size();
         int navigationCount = ensureList(page.getNavigationTargets()).size();
         int urlParameterCount = ensureList(page.getUrlParameterCandidates()).size();
+        int frameCount = ensureList(page.getFrameDefinitions()).size();
+        boolean framesetPage = Boolean.TRUE.equals(page.getFramesetPage());
 
         String pageContent = readPageContent(rootDir, page);
         int dynamicExpressions = countDynamicExpressions(page, pageContent);
         boolean hasScriptlets = pageContent != null && pageContent.contains("<%");
         boolean hasSessionUsage = containsIgnoreCase(pageContent, "session")
                 || containsIgnoreCase(pageContent, "sessionScope");
-        boolean hasFrames = containsIgnoreCase(pageContent, "<frame")
+        boolean hasFrames = frameCount > 0 || framesetPage
+                || containsIgnoreCase(pageContent, "<frame")
                 || containsIgnoreCase(pageContent, "<frameset")
                 || containsIgnoreCase(pageContent, "<iframe");
         boolean missingMappings = isMissingMappings(page);
@@ -102,7 +105,13 @@ public class DefaultMigrationReportGenerator implements MigrationReportGenerator
             notes.add("Session usage detected");
         }
         if (hasFrames) {
-            notes.add("Frames or iframes detected");
+            String frameNote = frameCount > 0
+                    ? "Frames detected: " + frameCount
+                    : "Frames or iframes detected";
+            notes.add(frameNote);
+            if (framesetPage) {
+                notes.add("Likely layout/frameset page");
+            }
         }
         if (missingMappings) {
             notes.add("No controller/backing bean mapping identified");
@@ -120,6 +129,8 @@ public class DefaultMigrationReportGenerator implements MigrationReportGenerator
                 hasScriptlets,
                 hasSessionUsage,
                 hasFrames,
+                frameCount,
+                framesetPage,
                 missingMappings,
                 roundScore(complexityScore),
                 difficulty,
@@ -249,7 +260,7 @@ public class DefaultMigrationReportGenerator implements MigrationReportGenerator
 
     private void writeCsvReport(Path path, List<PageReportEntry> entries) throws IOException {
         List<String> lines = new ArrayList<>();
-        lines.add("pageId,title,forms,fields,outputs,navigationTargets,urlParameters,dynamicExpressions,scriptlets,sessionUsage,frames,missingMappings,complexity,difficulty,confidence");
+        lines.add("pageId,title,forms,fields,outputs,navigationTargets,urlParameters,dynamicExpressions,scriptlets,sessionUsage,frames,frameCount,frameset,missingMappings,complexity,difficulty,confidence");
         for (PageReportEntry entry : entries) {
             lines.add(String.join(",",
                     escapeCsv(entry.pageId()),
@@ -263,6 +274,8 @@ public class DefaultMigrationReportGenerator implements MigrationReportGenerator
                     Boolean.toString(entry.scriptlets()),
                     Boolean.toString(entry.sessionUsage()),
                     Boolean.toString(entry.framesPresent()),
+                    Integer.toString(entry.frameCount()),
+                    Boolean.toString(entry.framesetPage()),
                     Boolean.toString(entry.missingMappings()),
                     Double.toString(entry.complexityScore()),
                     escapeCsv(entry.difficulty()),
@@ -308,6 +321,7 @@ public class DefaultMigrationReportGenerator implements MigrationReportGenerator
                         <th>Forms</th>
                         <th>Fields</th>
                         <th>Outputs</th>
+                        <th>Frames</th>
                         <th>Navigation</th>
                         <th>URL Params</th>
                         <th>Complexity</th>
@@ -334,6 +348,7 @@ public class DefaultMigrationReportGenerator implements MigrationReportGenerator
                               <td>${entry.formCount}</td>
                               <td>${entry.fieldCount}</td>
                               <td>${entry.outputCount}</td>
+                              <td>${entry.frameCount} ${entry.framesetPage ? '(layout)' : ''}</td>
                               <td>${entry.navigationTargets}</td>
                               <td>${entry.urlParameters}</td>
                               <td>${entry.complexityScore.toFixed(1)}</td>
@@ -392,11 +407,13 @@ public class DefaultMigrationReportGenerator implements MigrationReportGenerator
                                    boolean scriptlets,
                                    boolean sessionUsage,
                                    boolean framesPresent,
+                                   int frameCount,
+                                   boolean framesetPage,
                                    boolean missingMappings,
                                    double complexityScore,
                                    String difficulty,
                                    String confidenceLabel,
-                                   List<String> controllerCandidates,
+                                    List<String> controllerCandidates,
                                    List<String> backingBeanCandidates,
                                    List<String> notes) {
     }

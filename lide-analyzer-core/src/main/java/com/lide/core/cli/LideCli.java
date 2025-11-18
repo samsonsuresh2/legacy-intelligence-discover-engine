@@ -3,6 +3,7 @@ package com.lide.core.cli;
 import com.lide.core.CodebaseScanner;
 import com.lide.core.config.AnalyzerConfig;
 import com.lide.core.config.AnalyzerConfigLoader;
+import com.lide.core.extractors.FrameAnalyzer;
 import com.lide.core.extractors.NavigationTargetExtractor;
 import com.lide.core.extractors.UrlParameterExtractor;
 import com.lide.core.fs.CodebaseIndex;
@@ -11,6 +12,7 @@ import com.lide.core.java.DefaultJavaUsageAnalyzer;
 import com.lide.core.java.JavaMetadataIndex;
 import com.lide.core.java.JavaUsageAnalyzer;
 import com.lide.core.jsp.DefaultJspAnalyzer;
+import com.lide.core.jsp.DefaultFrameAnalyzer;
 import com.lide.core.jsp.DefaultNavigationTargetExtractor;
 import com.lide.core.jsp.DefaultUrlParameterExtractor;
 import com.lide.core.jsp.JspAnalyzer;
@@ -49,6 +51,7 @@ public final class LideCli {
             CodebaseScanner scanner = new DefaultCodebaseScanner(config.getRootDir(),
                     config.getIncludePatterns(), config.getExcludePatterns());
             JspAnalyzer jspAnalyzer = new DefaultJspAnalyzer();
+            FrameAnalyzer frameAnalyzer = new DefaultFrameAnalyzer();
             NavigationTargetExtractor navigationTargetExtractor = new DefaultNavigationTargetExtractor();
             UrlParameterExtractor urlParameterExtractor = new DefaultUrlParameterExtractor();
             JavaUsageAnalyzer javaUsageAnalyzer = new DefaultJavaUsageAnalyzer();
@@ -66,6 +69,9 @@ public final class LideCli {
 
             List<PageDescriptor> pages = jspAnalyzer.analyze(config.getRootDir(), index);
             LOGGER.info("JSP analysis generated {} page descriptors", pages.size());
+
+            frameAnalyzer.extract(config.getRootDir(), pages);
+            LOGGER.info("Frame extraction complete for {} pages", pages.size());
 
             navigationTargetExtractor.extract(config.getRootDir(), pages);
             LOGGER.info("Navigation extraction complete for {} pages", pages.size());

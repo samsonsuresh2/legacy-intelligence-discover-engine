@@ -50,6 +50,15 @@ export interface OutputSectionDescriptor {
   notes?: string[];
 }
 
+export interface FrameDefinition {
+  frameName?: string;
+  source?: string;
+  parentFrameName?: string;
+  depth?: number;
+  tag?: string;
+  confidence?: string;
+}
+
 export interface NavigationTarget {
   target?: string;
   sourcePattern?: string;
@@ -69,6 +78,7 @@ export interface PageMetadata {
   backingBeanCandidates?: string[];
   confidence?: string;
   confidenceScore?: number;
+  framesetPage?: boolean;
   notes?: string[];
 }
 
@@ -77,6 +87,7 @@ export interface PageSchema {
   title?: string;
   forms?: FormDescriptor[];
   outputs?: OutputSectionDescriptor[];
+  frameDefinitions?: FrameDefinition[];
   navigationTargets?: NavigationTarget[];
   urlParameterCandidates?: UrlParameterCandidate[];
   metadata?: PageMetadata;
@@ -88,6 +99,8 @@ export interface SummaryPageEntry {
   forms?: number;
   fields?: number;
   outputs?: number;
+  frames?: number;
+  frameset?: boolean;
   navigationTargets?: number;
   urlParameters?: number;
   confidence?: string;
