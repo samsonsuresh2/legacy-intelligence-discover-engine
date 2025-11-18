@@ -6,9 +6,16 @@ import com.fasterxml.jackson.databind.SerializationFeature;
 import com.lide.core.java.JavaMetadataIndex;
 import com.lide.core.model.FieldDescriptor;
 import com.lide.core.model.FormDescriptor;
+import com.lide.core.model.FrameDefinition;
+import com.lide.core.model.HiddenField;
+import com.lide.core.model.JsRoutingHint;
+import com.lide.core.model.NavigationTarget;
 import com.lide.core.model.OutputFieldDescriptor;
 import com.lide.core.model.OutputSectionDescriptor;
+import com.lide.core.model.PageDependency;
 import com.lide.core.model.PageDescriptor;
+import com.lide.core.model.SessionDependency;
+import com.lide.core.model.UrlParameter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -132,6 +139,14 @@ public class DefaultMigrationReportGenerator implements MigrationReportGenerator
             notes.add("Session dependencies detected: " + sessionDependencyCount);
         }
 
+        List<NavigationTarget> navigationTargets = ensureList(page.getNavigationTargets());
+        List<UrlParameter> urlParameters = ensureList(page.getUrlParameterCandidates());
+        List<HiddenField> hiddenFields = ensureList(page.getHiddenFields());
+        List<FrameDefinition> frameDefinitions = ensureList(page.getFrameDefinitions());
+        List<SessionDependency> sessionDependencies = ensureList(page.getSessionDependencies());
+        List<JsRoutingHint> jsRoutingHints = ensureList(page.getJsRoutingHints());
+        List<PageDependency> pageDependencies = ensureList(page.getPageDependencies());
+
         String pageId = resolvePageId(rootDir, page);
         return new PageReportEntry(pageId,
                 page.getTitle(),
@@ -157,7 +172,14 @@ public class DefaultMigrationReportGenerator implements MigrationReportGenerator
                 page.getConfidenceLabel(),
                 ensureList(page.getControllerCandidates()),
                 ensureList(page.getBackingBeanCandidates()),
-                notes);
+                notes,
+                navigationTargets,
+                urlParameters,
+                hiddenFields,
+                frameDefinitions,
+                sessionDependencies,
+                jsRoutingHints,
+                pageDependencies);
     }
 
     private String resolvePageId(Path rootDir, PageDescriptor page) {
@@ -311,35 +333,53 @@ public class DefaultMigrationReportGenerator implements MigrationReportGenerator
 
     private void writeHtmlReport(Path path, List<PageReportEntry> entries) throws IOException {
         String data = mapper.writeValueAsString(entries);
+
+
         String html = """
                 <!DOCTYPE html>
-                <html lang=\"en\">
+                <html lang="en">
                 <head>
-                  <meta charset=\"UTF-8\" />
+                  <meta charset="UTF-8" />
                   <title>LIDE Migration Report</title>
                   <style>
                     body { font-family: Arial, sans-serif; margin: 20px; }
                     table { border-collapse: collapse; width: 100%; }
                     th, td { border: 1px solid #ccc; padding: 8px; }
                     th { background: #f5f5f5; }
+                    tr.clickable-row { cursor: pointer; }
+                    tr.selected { background: #eef6ff; }
                     .badge { padding: 2px 6px; border-radius: 4px; color: #fff; font-size: 12px; }
                     .LOW { background: #2b9348; }
                     .MEDIUM { background: #f0ad4e; }
                     .HIGH { background: #d9534f; }
                     .CRITICAL { background: #5c0a0a; }
+                    .detail-panel { margin-top: 20px; border-top: 1px solid #ddd; padding-top: 16px; }
+                    .detail-summary { margin-bottom: 12px; }
+                    details summary { cursor: pointer; font-weight: bold; }
+                    .detail-item { border: 1px solid #e0e0e0; padding: 8px; margin: 6px 0; border-radius: 4px; background: #fafafa; }
+                    .detail-meta { display: flex; justify-content: space-between; gap: 12px; font-size: 12px; color: #555; }
+                    .detail-snippet { background: #f5f5f5; padding: 6px; border-radius: 4px; white-space: pre-wrap; word-break: break-word; margin-top: 6px; }
+                    .confidence-pill { padding: 2px 6px; border-radius: 4px; color: #fff; font-size: 12px; }
+                    .confidence-high { background: #2b9348; }
+                    .confidence-medium { background: #f0ad4e; color: #000; }
+                    .confidence-low { background: #6c757d; }
+                    .confidence-unknown { background: #adb5bd; }
+                    .section-container { margin-top: 12px; }
+                    .detail-title { font-weight: bold; margin-bottom: 4px; }
+                    .empty { color: #777; padding: 6px; }
                   </style>
                 </head>
                 <body>
                   <h1>LIDE Migration Report</h1>
-                  <label for=\"difficultyFilter\">Filter by difficulty:</label>
-                  <select id=\"difficultyFilter\">
-                    <option value=\"ALL\">All</option>
-                    <option value=\"LOW\">Low</option>
-                    <option value=\"MEDIUM\">Medium</option>
-                    <option value=\"HIGH\">High</option>
-                    <option value=\"CRITICAL\">Critical</option>
+                  <label for="difficultyFilter">Filter by difficulty:</label>
+                  <select id="difficultyFilter">
+                    <option value="ALL">All</option>
+                    <option value="LOW">Low</option>
+                    <option value="MEDIUM">Medium</option>
+                    <option value="HIGH">High</option>
+                    <option value="CRITICAL">Critical</option>
                   </select>
-                  <table id=\"reportTable\">
+                  <table id="reportTable">
                     <thead>
                       <tr>
                         <th>Page</th>
@@ -361,18 +401,143 @@ public class DefaultMigrationReportGenerator implements MigrationReportGenerator
                     </thead>
                     <tbody></tbody>
                   </table>
+                  <div id="detailPanel" class="detail-panel">
+                    <h2>Page Details</h2>
+                    <div id="detailSummary" class="detail-summary">Select a page to view details.</div>
+                    <div class="section-grid">
+                      <div id="navTargetsSection" class="section-container"></div>
+                      <div id="urlParamsSection" class="section-container"></div>
+                      <div id="hiddenFieldsSection" class="section-container"></div>
+                      <div id="framesSection" class="section-container"></div>
+                      <div id="sessionDepsSection" class="section-container"></div>
+                      <div id="jsRoutingSection" class="section-container"></div>
+                      <div id="pageDepsSection" class="section-container"></div>
+                    </div>
+                  </div>
                   <script>
                     const data = %s;
                     const tbody = document.querySelector('#reportTable tbody');
                     const filter = document.getElementById('difficultyFilter');
+                    let selectedRow = null;
+
+                    const difficultyLabels = {
+                      LOW: 'LOW',
+                      MEDIUM: 'MEDIUM',
+                      HIGH: 'HIGH',
+                      CRITICAL: 'CRITICAL'
+                    };
+
+                    function normalizeConfidence(conf) {
+                      return (conf || 'UNKNOWN').toUpperCase();
+                    }
+
+                    function confidenceClass(conf) {
+                      const normalized = normalizeConfidence(conf);
+                      if (normalized === 'HIGH') return 'confidence-high';
+                      if (normalized === 'MEDIUM') return 'confidence-medium';
+                      if (normalized === 'LOW') return 'confidence-low';
+                      return 'confidence-unknown';
+                    }
+
+                    function shouldOpenSection(items) {
+                      return !!(items && items.length && items.some(item => normalizeConfidence(item.confidence) !== 'LOW'));
+                    }
+
+                    function createDetailItem(title, source, snippet, confidence) {
+                      const wrapper = document.createElement('div');
+                      wrapper.className = 'detail-item';
+
+                      const header = document.createElement('div');
+                      header.className = 'detail-title';
+                      header.textContent = title || 'Unknown';
+
+                      const meta = document.createElement('div');
+                      meta.className = 'detail-meta';
+                      const sourceSpan = document.createElement('span');
+                      sourceSpan.textContent = `Source: ${source || 'N/A'}`;
+                      const confSpan = document.createElement('span');
+                      const normalized = normalizeConfidence(confidence);
+                      confSpan.className = `confidence-pill ${confidenceClass(confidence)}`;
+                      confSpan.textContent = normalized;
+                      meta.appendChild(sourceSpan);
+                      meta.appendChild(confSpan);
+
+                      const snippetEl = document.createElement('pre');
+                      snippetEl.className = 'detail-snippet';
+                      snippetEl.textContent = snippet || 'N/A';
+
+                      wrapper.appendChild(header);
+                      wrapper.appendChild(meta);
+                      wrapper.appendChild(snippetEl);
+
+                      return wrapper;
+                    }
+
+                    function renderSection(containerId, title, items, builder) {
+                      const container = document.getElementById(containerId);
+                      container.innerHTML = '';
+
+                      const details = document.createElement('details');
+                      if (shouldOpenSection(items)) {
+                        details.open = true;
+                      }
+
+                      const summary = document.createElement('summary');
+                      summary.textContent = `${title} (${(items && items.length) || 0})`;
+                      details.appendChild(summary);
+
+                      if (!items || items.length === 0) {
+                        const empty = document.createElement('div');
+                        empty.className = 'detail-item empty';
+                        empty.textContent = 'No entries detected.';
+                        details.appendChild(empty);
+                      } else {
+                        items.forEach(item => details.appendChild(builder(item)));
+                      }
+
+                      container.appendChild(details);
+                    }
+
+                    function renderDetails(entry) {
+                      const summaryEl = document.getElementById('detailSummary');
+                      if (!entry) {
+                        summaryEl.textContent = 'Select a page to view details.';
+                        return;
+                      }
+
+                      summaryEl.innerHTML = `<strong>${entry.pageId}</strong> — Difficulty: <span class=\"badge ${entry.difficulty}\">${difficultyLabels[entry.difficulty] || entry.difficulty}</span>, Complexity: ${entry.complexityScore.toFixed(1)}`;
+
+                      renderSection('navTargetsSection', 'Navigation Targets', entry.navigationTargetsDetail,
+                        (nav) => createDetailItem(nav.targetPage || 'Target', nav.sourcePattern || 'href/script', nav.snippet, nav.confidence));
+
+                      renderSection('urlParamsSection', 'URL Parameter Usage', entry.urlParametersDetail,
+                        (param) => createDetailItem(param.name || 'Parameter', param.source || 'link/script', param.snippet, param.confidence));
+
+                      renderSection('hiddenFieldsSection', 'Hidden Fields', entry.hiddenFieldsDetail,
+                        (field) => createDetailItem(field.name || 'Hidden Field', field.expression || field.defaultValue || 'hidden', field.snippet, field.confidence));
+
+                      renderSection('framesSection', 'Frame Layout', entry.frameDefinitionsDetail,
+                        (frame) => createDetailItem(frame.frameName || 'Frame', frame.source || frame.tag || 'frame', frame.tag || frame.source, frame.confidence));
+
+                      renderSection('sessionDepsSection', 'Session Dependencies', entry.sessionDependenciesDetail,
+                        (dep) => createDetailItem(dep.key || 'Session Key', dep.source || 'session', dep.snippet, dep.confidence));
+
+                      renderSection('jsRoutingSection', 'JS Routing Hints', entry.jsRoutingHintsDetail,
+                        (hint) => createDetailItem(hint.targetPage || 'Target', hint.sourcePattern || 'script', hint.snippet, hint.confidence));
+
+                      renderSection('pageDepsSection', 'Page Dependencies', entry.pageDependenciesDetail,
+                        (dep) => createDetailItem(`${dep.from || 'source'} -> ${dep.to || 'target'}`, dep.type || 'dependency', dep.type || `${dep.from || ''} => ${dep.to || ''}`, dep.confidence));
+                    }
 
                     function render() {
                       const target = filter.value;
                       tbody.innerHTML = '';
+                      let firstRendered = null;
                       data.filter(entry => target === 'ALL' || entry.difficulty === target)
                           .sort((a, b) => b.complexityScore - a.complexityScore)
                           .forEach(entry => {
                             const row = document.createElement('tr');
+                            row.className = 'clickable-row';
                             row.innerHTML = `
                               <td>${entry.pageId}</td>
                               <td>${entry.formCount}</td>
@@ -387,10 +552,30 @@ public class DefaultMigrationReportGenerator implements MigrationReportGenerator
                               <td>${entry.pageDependencies}</td>
                               <td>${entry.urlParameters}</td>
                               <td>${entry.complexityScore.toFixed(1)}</td>
-                              <td><span class="badge ${entry.difficulty}">${entry.difficulty}</span></td>
+                              <td><span class=\"badge ${entry.difficulty}\">${entry.difficulty}</span></td>
                               <td>${(entry.notes || []).join('<br/>')}</td>`;
+                            row.addEventListener('click', () => selectEntry(entry, row));
                             tbody.appendChild(row);
+                            if (!firstRendered) {
+                              firstRendered = { entry, row };
+                            }
                           });
+                      if (firstRendered) {
+                        selectEntry(firstRendered.entry, firstRendered.row);
+                      } else {
+                        renderDetails(null);
+                      }
+                    }
+
+                    function selectEntry(entry, row) {
+                      if (selectedRow) {
+                        selectedRow.classList.remove('selected');
+                      }
+                      selectedRow = row;
+                      if (selectedRow) {
+                        selectedRow.classList.add('selected');
+                      }
+                      renderDetails(entry);
                     }
 
                     filter.addEventListener('change', render);
@@ -399,6 +584,8 @@ public class DefaultMigrationReportGenerator implements MigrationReportGenerator
                 </body>
                 </html>
                 """.formatted(data);
+
+
 
         Files.writeString(path, html, StandardCharsets.UTF_8);
     }
@@ -455,6 +642,13 @@ public class DefaultMigrationReportGenerator implements MigrationReportGenerator
                                    String confidenceLabel,
                                    List<String> controllerCandidates,
                                    List<String> backingBeanCandidates,
-                                   List<String> notes) {
+                                   List<String> notes,
+                                   List<NavigationTarget> navigationTargetsDetail,
+                                   List<UrlParameter> urlParametersDetail,
+                                   List<HiddenField> hiddenFieldsDetail,
+                                   List<FrameDefinition> frameDefinitionsDetail,
+                                   List<SessionDependency> sessionDependenciesDetail,
+                                   List<JsRoutingHint> jsRoutingHintsDetail,
+                                   List<PageDependency> pageDependenciesDetail) {
     }
 }
