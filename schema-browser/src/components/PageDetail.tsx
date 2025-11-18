@@ -261,6 +261,23 @@ export function PageDetail({ page }: PageDetailProps) {
       </div>
 
       <div className="section">
+        <h3>JS routing hints</h3>
+        {page.jsRoutingHints && page.jsRoutingHints.length > 0 ? (
+          <div className="cards">
+            {page.jsRoutingHints.map((hint, idx) => (
+              <div className="card" key={`${hint.target ?? 'js-route'}-${idx}`}>
+                <div><strong>{hint.target ?? 'Unknown target'}</strong></div>
+                <div className="muted small">{hint.sourcePattern ?? 'source unknown'}</div>
+                {hint.snippet && <div className="muted small">{hint.snippet}</div>}
+              </div>
+            ))}
+          </div>
+        ) : (
+          <div className="muted">No JS routing hints detected.</div>
+        )}
+      </div>
+
+      <div className="section">
         <h3>URL parameters</h3>
         {page.urlParameterCandidates && page.urlParameterCandidates.length > 0 ? (
           <div className="cards">
@@ -274,6 +291,22 @@ export function PageDetail({ page }: PageDetailProps) {
           </div>
         ) : (
           <div className="muted">No URL parameters detected.</div>
+        )}
+      </div>
+
+      <div className="section">
+        <h3>Page dependencies</h3>
+        {page.pageDependencies && page.pageDependencies.length > 0 ? (
+          <div className="cards">
+            {page.pageDependencies.map((dep, idx) => (
+              <div className="card" key={`${dep.to ?? 'dep'}-${idx}`}>
+                <div><strong>{dep.to ?? 'Unknown target'}</strong></div>
+                <div className="muted small">from {dep.from ?? 'unknown'} · {dep.type ?? 'reference'}</div>
+              </div>
+            ))}
+          </div>
+        ) : (
+          <div className="muted">No page dependencies detected.</div>
         )}
       </div>
     </div>

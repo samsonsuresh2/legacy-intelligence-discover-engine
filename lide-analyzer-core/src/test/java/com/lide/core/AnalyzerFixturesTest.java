@@ -3,7 +3,9 @@ package com.lide.core;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.lide.core.extractors.CrossFrameInteractionExtractor;
 import com.lide.core.extractors.HiddenFieldStateExtractor;
+import com.lide.core.extractors.JsRoutingExtractor;
 import com.lide.core.extractors.NavigationTargetExtractor;
+import com.lide.core.extractors.PageDependencyGraphBuilder;
 import com.lide.core.extractors.SessionUsageExtractor;
 import com.lide.core.extractors.UrlParameterExtractor;
 import com.lide.core.fs.CodebaseIndex;
@@ -12,9 +14,11 @@ import com.lide.core.java.JavaFieldMetadata;
 import com.lide.core.java.JavaMetadataIndex;
 import com.lide.core.java.JavaUsageAnalyzer;
 import com.lide.core.jsp.DefaultCrossFrameInteractionExtractor;
+import com.lide.core.jsp.DefaultJsRoutingExtractor;
 import com.lide.core.jsp.DefaultFrameAnalyzer;
 import com.lide.core.jsp.DefaultHiddenFieldStateExtractor;
 import com.lide.core.jsp.DefaultNavigationTargetExtractor;
+import com.lide.core.jsp.DefaultPageDependencyGraphBuilder;
 import com.lide.core.jsp.DefaultSessionUsageExtractor;
 import com.lide.core.jsp.DefaultUrlParameterExtractor;
 import com.lide.core.jsp.DefaultJspAnalyzer;
@@ -69,6 +73,9 @@ class AnalyzerFixturesTest {
         CrossFrameInteractionExtractor crossFrameInteractionExtractor = new DefaultCrossFrameInteractionExtractor();
         crossFrameInteractionExtractor.extract(tempRoot, pages);
 
+        JsRoutingExtractor jsRoutingExtractor = new DefaultJsRoutingExtractor();
+        jsRoutingExtractor.extract(tempRoot, pages);
+
         HiddenFieldStateExtractor hiddenFieldStateExtractor = new DefaultHiddenFieldStateExtractor();
         hiddenFieldStateExtractor.extract(tempRoot, pages);
 
@@ -78,10 +85,17 @@ class AnalyzerFixturesTest {
         UrlParameterExtractor urlParameterExtractor = new DefaultUrlParameterExtractor();
         urlParameterExtractor.extract(tempRoot, pages);
 
+        PageDependencyGraphBuilder dependencyGraphBuilder = new DefaultPageDependencyGraphBuilder();
+        dependencyGraphBuilder.build(tempRoot, pages);
+
         assertEquals(1, pages.size());
         PageDescriptor page = pages.get(0);
         assertEquals("customer/searchCustomer.jsp", page.getPageId());
         assertEquals(3, page.getNavigationTargets().size());
+        assertNotNull(page.getJsRoutingHints());
+        assertEquals(1, page.getJsRoutingHints().size());
+        assertNotNull(page.getPageDependencies());
+        assertFalse(page.getPageDependencies().isEmpty());
 
         FormDescriptor form = assertSingleForm(page);
         assertEquals("searchForm", form.getFormId());
@@ -170,8 +184,14 @@ class AnalyzerFixturesTest {
         CrossFrameInteractionExtractor crossFrameInteractionExtractor = new DefaultCrossFrameInteractionExtractor();
         crossFrameInteractionExtractor.extract(tempRoot, pages);
 
+        JsRoutingExtractor jsRoutingExtractor = new DefaultJsRoutingExtractor();
+        jsRoutingExtractor.extract(tempRoot, pages);
+
         UrlParameterExtractor urlParameterExtractor = new DefaultUrlParameterExtractor();
         urlParameterExtractor.extract(tempRoot, pages);
+
+        PageDependencyGraphBuilder dependencyGraphBuilder = new DefaultPageDependencyGraphBuilder();
+        dependencyGraphBuilder.build(tempRoot, pages);
 
         JavaUsageAnalyzer javaAnalyzer = new DefaultJavaUsageAnalyzer();
         JavaMetadataIndex javaMetadata = javaAnalyzer.analyze(index);

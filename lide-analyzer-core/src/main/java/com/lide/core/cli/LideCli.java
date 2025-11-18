@@ -6,7 +6,9 @@ import com.lide.core.config.AnalyzerConfigLoader;
 import com.lide.core.extractors.FrameAnalyzer;
 import com.lide.core.extractors.CrossFrameInteractionExtractor;
 import com.lide.core.extractors.HiddenFieldStateExtractor;
+import com.lide.core.extractors.JsRoutingExtractor;
 import com.lide.core.extractors.NavigationTargetExtractor;
+import com.lide.core.extractors.PageDependencyGraphBuilder;
 import com.lide.core.extractors.SessionUsageExtractor;
 import com.lide.core.extractors.UrlParameterExtractor;
 import com.lide.core.fs.CodebaseIndex;
@@ -18,9 +20,11 @@ import com.lide.core.jsp.DefaultFrameAnalyzer;
 import com.lide.core.jsp.DefaultCrossFrameInteractionExtractor;
 import com.lide.core.jsp.DefaultHiddenFieldStateExtractor;
 import com.lide.core.jsp.DefaultJspAnalyzer;
+import com.lide.core.jsp.DefaultJsRoutingExtractor;
 import com.lide.core.jsp.DefaultNavigationTargetExtractor;
 import com.lide.core.jsp.DefaultSessionUsageExtractor;
 import com.lide.core.jsp.DefaultUrlParameterExtractor;
+import com.lide.core.jsp.DefaultPageDependencyGraphBuilder;
 import com.lide.core.jsp.JspAnalyzer;
 import com.lide.core.model.PageDescriptor;
 import com.lide.core.report.DefaultJsonSchemaGenerator;
@@ -60,9 +64,11 @@ public final class LideCli {
             FrameAnalyzer frameAnalyzer = new DefaultFrameAnalyzer();
             CrossFrameInteractionExtractor crossFrameInteractionExtractor = new DefaultCrossFrameInteractionExtractor();
             NavigationTargetExtractor navigationTargetExtractor = new DefaultNavigationTargetExtractor();
+            JsRoutingExtractor jsRoutingExtractor = new DefaultJsRoutingExtractor();
             HiddenFieldStateExtractor hiddenFieldStateExtractor = new DefaultHiddenFieldStateExtractor();
             SessionUsageExtractor sessionUsageExtractor = new DefaultSessionUsageExtractor();
             UrlParameterExtractor urlParameterExtractor = new DefaultUrlParameterExtractor();
+            PageDependencyGraphBuilder pageDependencyGraphBuilder = new DefaultPageDependencyGraphBuilder();
             JavaUsageAnalyzer javaUsageAnalyzer = new DefaultJavaUsageAnalyzer();
             JsonSchemaGenerator jsonSchemaGenerator = new DefaultJsonSchemaGenerator(config);
             MigrationReportGenerator migrationReportGenerator = new DefaultMigrationReportGenerator();
@@ -88,6 +94,9 @@ public final class LideCli {
             crossFrameInteractionExtractor.extract(config.getRootDir(), pages);
             LOGGER.info("Cross-frame interaction extraction complete for {} pages", pages.size());
 
+            jsRoutingExtractor.extract(config.getRootDir(), pages);
+            LOGGER.info("JS routing extraction complete for {} pages", pages.size());
+
             hiddenFieldStateExtractor.extract(config.getRootDir(), pages);
             LOGGER.info("Hidden field extraction complete for {} pages", pages.size());
 
@@ -96,6 +105,9 @@ public final class LideCli {
 
             urlParameterExtractor.extract(config.getRootDir(), pages);
             LOGGER.info("URL parameter extraction complete for {} pages", pages.size());
+
+            pageDependencyGraphBuilder.build(config.getRootDir(), pages);
+            LOGGER.info("Page dependency graph construction complete for {} pages", pages.size());
 
             JavaMetadataIndex javaMetadata = javaUsageAnalyzer.analyze(index);
             LOGGER.info("Java metadata classes: {}", javaMetadata.getFieldsByClass().size());

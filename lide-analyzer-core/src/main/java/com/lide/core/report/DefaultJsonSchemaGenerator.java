@@ -10,10 +10,12 @@ import com.lide.core.model.FieldDescriptor;
 import com.lide.core.model.FormDescriptor;
 import com.lide.core.model.FrameDefinition;
 import com.lide.core.model.HiddenField;
+import com.lide.core.model.JsRoutingHint;
 import com.lide.core.model.NavigationTarget;
 import com.lide.core.model.OptionDescriptor;
 import com.lide.core.model.OutputFieldDescriptor;
 import com.lide.core.model.OutputSectionDescriptor;
+import com.lide.core.model.PageDependency;
 import com.lide.core.model.PageDescriptor;
 import com.lide.core.model.CrossFrameInteraction;
 import com.lide.core.model.SessionDependency;
@@ -629,6 +631,9 @@ public class DefaultJsonSchemaGenerator implements JsonSchemaGenerator {
         json.put("crossFrameInteractions", ensureList(page.getCrossFrameInteractions()).stream()
                 .map(this::toCrossFrameInteractionJson)
                 .collect(Collectors.toList()));
+        json.put("jsRoutingHints", ensureList(page.getJsRoutingHints()).stream()
+                .map(this::toJsRoutingJson)
+                .collect(Collectors.toList()));
         json.put("navigationTargets", ensureList(page.getNavigationTargets()).stream()
                 .map(this::toNavigationJson)
                 .collect(Collectors.toList()));
@@ -640,6 +645,9 @@ public class DefaultJsonSchemaGenerator implements JsonSchemaGenerator {
                 .collect(Collectors.toList()));
         json.put("sessionDependencies", ensureList(page.getSessionDependencies()).stream()
                 .map(this::toSessionDependencyJson)
+                .collect(Collectors.toList()));
+        json.put("pageDependencies", ensureList(page.getPageDependencies()).stream()
+                .map(this::toPageDependencyJson)
                 .collect(Collectors.toList()));
 
         Map<String, Object> metadata = new LinkedHashMap<>();
@@ -761,6 +769,23 @@ public class DefaultJsonSchemaGenerator implements JsonSchemaGenerator {
         return map;
     }
 
+    private Map<String, Object> toJsRoutingJson(JsRoutingHint hint) {
+        Map<String, Object> map = new LinkedHashMap<>();
+        map.put("target", hint.getTargetPage());
+        map.put("sourcePattern", hint.getSourcePattern());
+        map.put("snippet", hint.getSnippet());
+        map.put("confidence", hint.getConfidence());
+        return map;
+    }
+
+    private Map<String, Object> toPageDependencyJson(PageDependency dependency) {
+        Map<String, Object> map = new LinkedHashMap<>();
+        map.put("from", dependency.getFrom());
+        map.put("to", dependency.getTo());
+        map.put("type", dependency.getType());
+        return map;
+    }
+
     private Map<String, Object> toOutputJson(OutputSectionDescriptor section) {
         Map<String, Object> map = new LinkedHashMap<>();
         map.put("id", section.getSectionId());
@@ -795,9 +820,11 @@ public class DefaultJsonSchemaGenerator implements JsonSchemaGenerator {
         summary.put("frameset", Boolean.TRUE.equals(page.getFramesetPage()));
         summary.put("crossFrameInteractions", ensureList(page.getCrossFrameInteractions()).size());
         summary.put("navigationTargets", ensureList(page.getNavigationTargets()).size());
+        summary.put("jsRoutingHints", ensureList(page.getJsRoutingHints()).size());
         summary.put("urlParameters", ensureList(page.getUrlParameterCandidates()).size());
         summary.put("hiddenFields", ensureList(page.getHiddenFields()).size());
         summary.put("sessionDependencies", ensureList(page.getSessionDependencies()).size());
+        summary.put("pageDependencies", ensureList(page.getPageDependencies()).size());
         summary.put("confidenceScore", aggregation.confidenceScore());
         summary.put("confidence", aggregation.confidenceLabel());
         return summary;

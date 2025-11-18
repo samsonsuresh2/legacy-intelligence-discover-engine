@@ -75,11 +75,13 @@ public class DefaultMigrationReportGenerator implements MigrationReportGenerator
                 .sum();
         int outputCount = ensureList(page.getOutputs()).size();
         int navigationCount = ensureList(page.getNavigationTargets()).size();
+        int jsRoutingCount = ensureList(page.getJsRoutingHints()).size();
         int urlParameterCount = ensureList(page.getUrlParameterCandidates()).size();
         int frameCount = ensureList(page.getFrameDefinitions()).size();
         int crossFrameInteractionCount = ensureList(page.getCrossFrameInteractions()).size();
         int hiddenFieldCount = ensureList(page.getHiddenFields()).size();
         int sessionDependencyCount = ensureList(page.getSessionDependencies()).size();
+        int pageDependencyCount = ensureList(page.getPageDependencies()).size();
         boolean framesetPage = Boolean.TRUE.equals(page.getFramesetPage());
 
         String pageContent = readPageContent(rootDir, page);
@@ -137,10 +139,12 @@ public class DefaultMigrationReportGenerator implements MigrationReportGenerator
                 fieldCount,
                 outputCount,
                 navigationCount,
+                jsRoutingCount,
                 urlParameterCount,
                 crossFrameInteractionCount,
                 hiddenFieldCount,
                 sessionDependencyCount,
+                pageDependencyCount,
                 dynamicExpressions,
                 hasScriptlets,
                 hasSessionUsage,
@@ -276,7 +280,7 @@ public class DefaultMigrationReportGenerator implements MigrationReportGenerator
 
     private void writeCsvReport(Path path, List<PageReportEntry> entries) throws IOException {
         List<String> lines = new ArrayList<>();
-        lines.add("pageId,title,forms,fields,outputs,navigationTargets,urlParameters,crossFrameInteractions,hiddenFields,sessionDependencies,dynamicExpressions,scriptlets,sessionUsage,frames,frameCount,frameset,missingMappings,complexity,difficulty,confidence");
+        lines.add("pageId,title,forms,fields,outputs,navigationTargets,jsRoutingHints,urlParameters,crossFrameInteractions,hiddenFields,sessionDependencies,pageDependencies,dynamicExpressions,scriptlets,sessionUsage,frames,frameCount,frameset,missingMappings,complexity,difficulty,confidence");
         for (PageReportEntry entry : entries) {
             lines.add(String.join(",",
                     escapeCsv(entry.pageId()),
@@ -285,10 +289,12 @@ public class DefaultMigrationReportGenerator implements MigrationReportGenerator
                     Integer.toString(entry.fieldCount()),
                     Integer.toString(entry.outputCount()),
                     Integer.toString(entry.navigationTargets()),
+                    Integer.toString(entry.jsRoutingHints()),
                     Integer.toString(entry.urlParameters()),
                     Integer.toString(entry.crossFrameInteractions()),
                     Integer.toString(entry.hiddenFields()),
                     Integer.toString(entry.sessionDependencies()),
+                    Integer.toString(entry.pageDependencies()),
                     Integer.toString(entry.dynamicExpressions()),
                     Boolean.toString(entry.scriptlets()),
                     Boolean.toString(entry.sessionUsage()),
@@ -342,9 +348,11 @@ public class DefaultMigrationReportGenerator implements MigrationReportGenerator
                         <th>Outputs</th>
                         <th>Frames</th>
                         <th>Navigation</th>
+                        <th>JS Routing</th>
                         <th>Cross-Frame</th>
                         <th>Hidden Fields</th>
                         <th>Session Dependencies</th>
+                        <th>Dependencies</th>
                         <th>URL Params</th>
                         <th>Complexity</th>
                         <th>Difficulty</th>
@@ -372,9 +380,11 @@ public class DefaultMigrationReportGenerator implements MigrationReportGenerator
                               <td>${entry.outputCount}</td>
                               <td>${entry.frameCount} ${entry.framesetPage ? '(layout)' : ''}</td>
                               <td>${entry.navigationTargets}</td>
+                              <td>${entry.jsRoutingHints}</td>
                               <td>${entry.crossFrameInteractions}</td>
                               <td>${entry.hiddenFields}</td>
                               <td>${entry.sessionDependencies}</td>
+                              <td>${entry.pageDependencies}</td>
                               <td>${entry.urlParameters}</td>
                               <td>${entry.complexityScore.toFixed(1)}</td>
                               <td><span class="badge ${entry.difficulty}">${entry.difficulty}</span></td>
@@ -427,10 +437,12 @@ public class DefaultMigrationReportGenerator implements MigrationReportGenerator
                                    int fieldCount,
                                    int outputCount,
                                    int navigationTargets,
+                                   int jsRoutingHints,
                                    int urlParameters,
                                    int crossFrameInteractions,
                                    int hiddenFields,
                                    int sessionDependencies,
+                                   int pageDependencies,
                                    int dynamicExpressions,
                                    boolean scriptlets,
                                    boolean sessionUsage,

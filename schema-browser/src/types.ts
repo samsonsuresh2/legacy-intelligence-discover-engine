@@ -82,6 +82,13 @@ export interface CrossFrameInteraction {
   confidence?: string;
 }
 
+export interface JsRoutingHint {
+  target?: string;
+  sourcePattern?: string;
+  snippet?: string;
+  confidence?: string;
+}
+
 export interface NavigationTarget {
   target?: string;
   sourcePattern?: string;
@@ -94,6 +101,12 @@ export interface UrlParameterCandidate {
   source?: string;
   snippet?: string;
   confidence?: string;
+}
+
+export interface PageDependency {
+  from?: string;
+  to?: string;
+  type?: string;
 }
 
 export interface PageMetadata {
@@ -112,10 +125,12 @@ export interface PageSchema {
   outputs?: OutputSectionDescriptor[];
   frameDefinitions?: FrameDefinition[];
   crossFrameInteractions?: CrossFrameInteraction[];
+  jsRoutingHints?: JsRoutingHint[];
   navigationTargets?: NavigationTarget[];
   urlParameterCandidates?: UrlParameterCandidate[];
   hiddenFields?: HiddenField[];
   sessionDependencies?: SessionDependency[];
+  pageDependencies?: PageDependency[];
   metadata?: PageMetadata;
 }
 
@@ -129,9 +144,11 @@ export interface SummaryPageEntry {
   frameset?: boolean;
   crossFrameInteractions?: number;
   navigationTargets?: number;
+  jsRoutingHints?: number;
   urlParameters?: number;
   hiddenFields?: number;
   sessionDependencies?: number;
+  pageDependencies?: number;
   confidence?: string;
   confidenceScore?: number;
 }
