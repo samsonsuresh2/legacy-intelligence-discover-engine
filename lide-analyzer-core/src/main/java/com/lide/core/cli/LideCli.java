@@ -4,6 +4,7 @@ import com.lide.core.CodebaseScanner;
 import com.lide.core.config.AnalyzerConfig;
 import com.lide.core.config.AnalyzerConfigLoader;
 import com.lide.core.extractors.FrameAnalyzer;
+import com.lide.core.extractors.CrossFrameInteractionExtractor;
 import com.lide.core.extractors.NavigationTargetExtractor;
 import com.lide.core.extractors.UrlParameterExtractor;
 import com.lide.core.fs.CodebaseIndex;
@@ -11,8 +12,9 @@ import com.lide.core.fs.DefaultCodebaseScanner;
 import com.lide.core.java.DefaultJavaUsageAnalyzer;
 import com.lide.core.java.JavaMetadataIndex;
 import com.lide.core.java.JavaUsageAnalyzer;
-import com.lide.core.jsp.DefaultJspAnalyzer;
 import com.lide.core.jsp.DefaultFrameAnalyzer;
+import com.lide.core.jsp.DefaultCrossFrameInteractionExtractor;
+import com.lide.core.jsp.DefaultJspAnalyzer;
 import com.lide.core.jsp.DefaultNavigationTargetExtractor;
 import com.lide.core.jsp.DefaultUrlParameterExtractor;
 import com.lide.core.jsp.JspAnalyzer;
@@ -52,6 +54,7 @@ public final class LideCli {
                     config.getIncludePatterns(), config.getExcludePatterns());
             JspAnalyzer jspAnalyzer = new DefaultJspAnalyzer();
             FrameAnalyzer frameAnalyzer = new DefaultFrameAnalyzer();
+            CrossFrameInteractionExtractor crossFrameInteractionExtractor = new DefaultCrossFrameInteractionExtractor();
             NavigationTargetExtractor navigationTargetExtractor = new DefaultNavigationTargetExtractor();
             UrlParameterExtractor urlParameterExtractor = new DefaultUrlParameterExtractor();
             JavaUsageAnalyzer javaUsageAnalyzer = new DefaultJavaUsageAnalyzer();
@@ -75,6 +78,9 @@ public final class LideCli {
 
             navigationTargetExtractor.extract(config.getRootDir(), pages);
             LOGGER.info("Navigation extraction complete for {} pages", pages.size());
+
+            crossFrameInteractionExtractor.extract(config.getRootDir(), pages);
+            LOGGER.info("Cross-frame interaction extraction complete for {} pages", pages.size());
 
             urlParameterExtractor.extract(config.getRootDir(), pages);
             LOGGER.info("URL parameter extraction complete for {} pages", pages.size());

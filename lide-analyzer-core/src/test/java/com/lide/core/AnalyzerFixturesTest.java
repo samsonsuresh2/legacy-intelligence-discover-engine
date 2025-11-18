@@ -1,6 +1,7 @@
 package com.lide.core;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.lide.core.extractors.CrossFrameInteractionExtractor;
 import com.lide.core.extractors.NavigationTargetExtractor;
 import com.lide.core.extractors.UrlParameterExtractor;
 import com.lide.core.fs.CodebaseIndex;
@@ -8,6 +9,7 @@ import com.lide.core.java.DefaultJavaUsageAnalyzer;
 import com.lide.core.java.JavaFieldMetadata;
 import com.lide.core.java.JavaMetadataIndex;
 import com.lide.core.java.JavaUsageAnalyzer;
+import com.lide.core.jsp.DefaultCrossFrameInteractionExtractor;
 import com.lide.core.jsp.DefaultFrameAnalyzer;
 import com.lide.core.jsp.DefaultNavigationTargetExtractor;
 import com.lide.core.jsp.DefaultUrlParameterExtractor;
@@ -59,6 +61,9 @@ class AnalyzerFixturesTest {
 
         NavigationTargetExtractor navigationTargetExtractor = new DefaultNavigationTargetExtractor();
         navigationTargetExtractor.extract(tempRoot, pages);
+
+        CrossFrameInteractionExtractor crossFrameInteractionExtractor = new DefaultCrossFrameInteractionExtractor();
+        crossFrameInteractionExtractor.extract(tempRoot, pages);
 
         UrlParameterExtractor urlParameterExtractor = new DefaultUrlParameterExtractor();
         urlParameterExtractor.extract(tempRoot, pages);
@@ -151,6 +156,9 @@ class AnalyzerFixturesTest {
 
         NavigationTargetExtractor navigationTargetExtractor = new DefaultNavigationTargetExtractor();
         navigationTargetExtractor.extract(tempRoot, pages);
+
+        CrossFrameInteractionExtractor crossFrameInteractionExtractor = new DefaultCrossFrameInteractionExtractor();
+        crossFrameInteractionExtractor.extract(tempRoot, pages);
 
         UrlParameterExtractor urlParameterExtractor = new DefaultUrlParameterExtractor();
         urlParameterExtractor.extract(tempRoot, pages);

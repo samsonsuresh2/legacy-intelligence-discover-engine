@@ -59,6 +59,14 @@ export interface FrameDefinition {
   confidence?: string;
 }
 
+export interface CrossFrameInteraction {
+  fromFrame?: string;
+  toJsp?: string;
+  type?: string;
+  snippet?: string;
+  confidence?: string;
+}
+
 export interface NavigationTarget {
   target?: string;
   sourcePattern?: string;
@@ -88,6 +96,7 @@ export interface PageSchema {
   forms?: FormDescriptor[];
   outputs?: OutputSectionDescriptor[];
   frameDefinitions?: FrameDefinition[];
+  crossFrameInteractions?: CrossFrameInteraction[];
   navigationTargets?: NavigationTarget[];
   urlParameterCandidates?: UrlParameterCandidate[];
   metadata?: PageMetadata;
@@ -101,6 +110,7 @@ export interface SummaryPageEntry {
   outputs?: number;
   frames?: number;
   frameset?: boolean;
+  crossFrameInteractions?: number;
   navigationTargets?: number;
   urlParameters?: number;
   confidence?: string;

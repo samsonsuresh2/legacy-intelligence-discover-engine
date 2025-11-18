@@ -31,6 +31,7 @@ public class PageDescriptor {
     private List<NavigationTarget> navigationTargets; // TODO: capture navigation targets to other JSPs
     private List<UrlParameter> urlParameterCandidates; // TODO: capture URL parameters referenced by page links/scripts
     private List<FrameDefinition> frameDefinitions; // TODO: capture frameset and iframe declarations
+    private List<CrossFrameInteraction> crossFrameInteractions; // TODO: capture interactions between frames
     private List<String> controllerCandidates; // TODO: correlate JSP with backing Java classes
     private List<String> backingBeanCandidates; // TODO: proposed backing beans inferred from heuristics
     private List<String> notes; // TODO: include diagnostic notes for reviewers
@@ -104,6 +105,14 @@ public class PageDescriptor {
 
     public void setFrameDefinitions(List<FrameDefinition> frameDefinitions) {
         this.frameDefinitions = frameDefinitions;
+    }
+
+    public List<CrossFrameInteraction> getCrossFrameInteractions() {
+        return crossFrameInteractions;
+    }
+
+    public void setCrossFrameInteractions(List<CrossFrameInteraction> crossFrameInteractions) {
+        this.crossFrameInteractions = crossFrameInteractions;
     }
 
     public List<String> getControllerCandidates() {

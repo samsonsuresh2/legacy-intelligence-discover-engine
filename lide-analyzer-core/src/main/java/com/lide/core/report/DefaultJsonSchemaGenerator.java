@@ -13,6 +13,7 @@ import com.lide.core.model.NavigationTarget;
 import com.lide.core.model.OptionDescriptor;
 import com.lide.core.model.OutputSectionDescriptor;
 import com.lide.core.model.PageDescriptor;
+import com.lide.core.model.CrossFrameInteraction;
 import com.lide.core.model.UrlParameter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -622,6 +623,9 @@ public class DefaultJsonSchemaGenerator implements JsonSchemaGenerator {
         json.put("frameDefinitions", ensureList(page.getFrameDefinitions()).stream()
                 .map(this::toFrameJson)
                 .collect(Collectors.toList()));
+        json.put("crossFrameInteractions", ensureList(page.getCrossFrameInteractions()).stream()
+                .map(this::toCrossFrameInteractionJson)
+                .collect(Collectors.toList()));
         json.put("navigationTargets", ensureList(page.getNavigationTargets()).stream()
                 .map(this::toNavigationJson)
                 .collect(Collectors.toList()));
@@ -649,6 +653,16 @@ public class DefaultJsonSchemaGenerator implements JsonSchemaGenerator {
         map.put("depth", frame.getDepth());
         map.put("tag", frame.getTag());
         map.put("confidence", frame.getConfidence());
+        return map;
+    }
+
+    private Map<String, Object> toCrossFrameInteractionJson(CrossFrameInteraction interaction) {
+        Map<String, Object> map = new LinkedHashMap<>();
+        map.put("fromFrame", interaction.getFromFrame());
+        map.put("toJsp", interaction.getToJsp());
+        map.put("type", interaction.getType());
+        map.put("snippet", interaction.getSnippet());
+        map.put("confidence", interaction.getConfidence());
         return map;
     }
 
@@ -751,6 +765,7 @@ public class DefaultJsonSchemaGenerator implements JsonSchemaGenerator {
         summary.put("outputs", aggregation.outputCount());
         summary.put("frames", ensureList(page.getFrameDefinitions()).size());
         summary.put("frameset", Boolean.TRUE.equals(page.getFramesetPage()));
+        summary.put("crossFrameInteractions", ensureList(page.getCrossFrameInteractions()).size());
         summary.put("navigationTargets", ensureList(page.getNavigationTargets()).size());
         summary.put("urlParameters", ensureList(page.getUrlParameterCandidates()).size());
         summary.put("confidenceScore", aggregation.confidenceScore());

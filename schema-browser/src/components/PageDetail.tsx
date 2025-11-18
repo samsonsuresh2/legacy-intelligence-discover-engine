@@ -184,6 +184,27 @@ export function PageDetail({ page }: PageDetailProps) {
       </div>
 
       <div className="section">
+        <h3>Cross-frame interactions</h3>
+        {page.crossFrameInteractions && page.crossFrameInteractions.length > 0 ? (
+          <div className="cards">
+            {page.crossFrameInteractions.map((interaction, idx) => (
+              <div className="card" key={`${interaction.toJsp ?? 'xframe'}-${idx}`}>
+                <div>
+                  <strong>{interaction.toJsp ?? 'Unknown target'}</strong>
+                </div>
+                <div className="muted small">
+                  from: {interaction.fromFrame ?? 'frame'} · {interaction.type ?? 'locationChange'}
+                </div>
+                {interaction.snippet && <div className="muted small">{interaction.snippet}</div>}
+              </div>
+            ))}
+          </div>
+        ) : (
+          <div className="muted">No cross-frame interactions detected.</div>
+        )}
+      </div>
+
+      <div className="section">
         <h3>Navigation targets</h3>
         {page.navigationTargets && page.navigationTargets.length > 0 ? (
           <div className="cards">
